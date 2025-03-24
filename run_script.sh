@@ -122,26 +122,15 @@ cqlsh $CASSANDRA_HOST -u $USERNAME -p $PASSWORD -f $CQL_FILE
 
 # Step 3.7: S3 Bucket Creation (Dynamic)
 # project_name="datasnake-sensor-data"
-bucket_name_gadm="deltalake-gadm"
-bucket_uri_gadm="s3://$bucket_name_gadm"
+bucket_name_sensor_processed="deltalake_sensor_data_processed"
+bucket_uri_sensor_processed="s3://$bucket_name_gadm"
 
 # Check if the bucket exists
-if ! s3cmd ls | grep -q "$bucket_uri_gadm"; then
-    echo "Bucket does not exist. Creating delta lake bucket: $bucket_uri_gadm"
-    s3cmd mb "$bucket_uri_gadm"
+if ! s3cmd ls | grep -q "$bucket_uri_sensor_processed"; then
+    echo "Bucket does not exist. Creating delta lake bucket: $bucket_uri_sensor_processed"
+    s3cmd mb "$bucket_uri_sensor_processed"
 else
-    echo "Bucket $bucket_uri_gadm already exists."
-fi
-
-bucket_name_wof="deltalake-wof"
-bucket_uri_wof="s3://$bucket_name_wof"
-
-# Check if the bucket exists
-if ! s3cmd ls | grep -q "$bucket_uri_wof"; then
-    echo "Bucket does not exist. Creating delta lake bucket: $bucket_uri_wof"
-    s3cmd mb "$bucket_uri_wof"
-else
-    echo "Bucket $bucket_uri_wof already exists."
+    echo "Bucket $bucket_uri_sensor_processed already exists."
 fi
 
 # Initiating running main code
