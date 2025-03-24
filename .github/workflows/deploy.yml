@@ -1,4 +1,4 @@
-name: Deploy DataSnake Data Prep Project to Vultr
+name: Deploy DataSnake Sensor Data Project to Vultr
 on:
   push:
     branches:
@@ -36,19 +36,19 @@ jobs:
           cd /home/dev
 
           # Step 3.2: Clone the GitHub repository (if not already cloned)
-          if [ ! -d 'datasnake-data-prep' ]; then
-            git clone https://github.com/datasnake-littlecobra/datasnake-data-prep.git
+          if [ ! -d 'datasnake-sensor-data' ]; then
+            git clone https://github.com/datasnake-littlecobra/datasnake-sensor-data.git
           else
             echo 'Repository already cloned. Pulling latest changes...'
-            cd datasnake-data-prep
+            cd datasnake-sensor-data
             git pull origin main
             cd ..
           fi
 
           echo "Current working directory is: $(pwd)"
-          cd /home/dev/datasnake-data-prep
+          cd /home/dev/datasnake-sensor-data
           echo "Current working directory after cd is: $(pwd)"
-          chmod +x /home/dev/datasnake-data-prep/run_script.sh
-          sh /home/dev/datasnake-data-prep/run_script.sh
+          chmod +x /home/dev/datasnake-sensor-data/run_script.sh
+          sh /home/dev/datasnake-sensor-data/run_script.sh
 
           "

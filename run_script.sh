@@ -121,7 +121,7 @@ cqlsh $CASSANDRA_HOST -u $USERNAME -p $PASSWORD -f $CQL_FILE
 
 
 # Step 3.7: S3 Bucket Creation (Dynamic)
-# project_name="datasnake-data-data"
+# project_name="datasnake-sensor-data"
 bucket_name_gadm="deltalake-gadm"
 bucket_uri_gadm="s3://$bucket_name_gadm"
 
