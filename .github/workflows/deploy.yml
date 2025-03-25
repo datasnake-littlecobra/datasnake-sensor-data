@@ -37,11 +37,11 @@ jobs:
 
           # Step 3.2: Clone the GitHub repository (if not already cloned)
           if [ ! -d 'datasnake-sensor-data' ]; then
-            echo 'Cloning Repository...'
+            echo '-----------------Cloning Repository---------------'
             git clone https://github.com/datasnake-littlecobra/datasnake-sensor-data.git
           else
             echo 'Repository already cloned. Pulling latest changes...'
-            cd datasnake-sensor-data
+            cd /home/dev/datasnake-sensor-data
             git pull origin main
             cd ..
           fi
