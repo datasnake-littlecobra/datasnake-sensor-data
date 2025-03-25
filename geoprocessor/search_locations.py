@@ -1,6 +1,7 @@
 import os
 from deltalake import DeltaTable
 import polars as pl
+import geopolars as gpl
 import geopandas as gpd
 from shapely.geometry import Point
 from shapely import wkb
@@ -73,8 +74,6 @@ wof_cache = DataFrameCache(expiration_minutes=60)
 wof_location_cache = DataFrameCache(expiration_minutes=60)
 wof_cache_key_full = f"wof_cache_full"
 FAILED_RECORDS_FILE = "failed_records.csv"
-
-import geopolars as gpl
 
 
 class WeatherDataLocationSearcher:
