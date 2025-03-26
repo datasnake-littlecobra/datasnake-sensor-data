@@ -11,8 +11,8 @@ LOG_FILE = "/home/dev/mqtt-python/mqtt_weather_logs.log"
 PROCESSED_SENSOR_DATA_DELTA_PATH = "/datasnake-deltalake-sensor-data-processed"
 CASSANDRA_KEYSPACE = "datasnake"
 CASSANDRA_TABLE = "sensor_data_processed"
-# WOF_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
-WOF_DELTA_PATH = "deltalake-wof-oregon"
+WOF_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
+# WOF_DELTA_PATH = "deltalake-wof-oregon"
 # GADM_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
 
 # search_locations_columns_coordinates = ["lat", "lon"]
