@@ -23,9 +23,9 @@ def main():
     return_as_dataframe = True
     weather_data_df = LogReader.read_log_file(LOG_FILE, return_as_dataframe)
     # weather_data_df = pl.DataFrame(weather_data_df)
-    print(weather_data_df.head())
-    # print(type(weather_data_df))
-    # return
+    logging.info(weather_data_df.head())
+    logging.info(f"total weather_data_df length of rows : {len(weather_data_df)}")
+    return
     # save to pre-processing deltalake / cassandra
 
     # Enrich with location
