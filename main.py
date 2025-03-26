@@ -41,7 +41,7 @@ def main():
     total = t2 - t1
     logging.info(f"it took {total} to search the enrich_weather_data")
     logging.info(enriched_weather_df.head())
-    logging.info(f"total rows: {len(enriched_weather_df)}")
+    logging.info(f"total length rows: {len(enriched_weather_df)}")
     
     return
 
