@@ -34,7 +34,7 @@ echo "After Using Python at: $(which python3.12)"
 # Step 3.5: Install the required dependencies (from requirements.txt)
 if [ -f "/home/dev/datasnake-sensor-data/requirements.txt" ]; then
     pip install --upgrade pip setuptools
-    $VENV_DIR/bin/python -m pip install -r "$PROJECT_DIR/requirements.txt"
+    $VENV_DIR/bin/pip install -r "$PROJECT_DIR/requirements.txt"
     # pip3 install -r /home/dev/usgs-earthquake-data-pipeline/requirements.txt
 fi
 

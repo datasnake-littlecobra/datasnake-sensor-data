@@ -1,7 +1,6 @@
 import os
 from deltalake import DeltaTable
 import polars as pl
-import geopolars as gpl
 import geopandas as gpd
 from shapely.geometry import Point
 from shapely import wkb
@@ -190,7 +189,9 @@ class WeatherDataLocationSearcher:
                 return None
 
             # Load GADM1 geopackage into GeoPolars
-            df_gadm = gpl.read_file(read_paths[level])
+            df_gadm = gpd.read_file(read_paths[level])
+            # gdf = gpd.read_file(r'path/to/file.gpkg', engine='pyogrio', use_arrow=True)
+            
             # Check if the geometry is in WKB format and convert to WKT
             if df_gadm.geometry.dtype == "object":  # Check if geometry is in WKB
                 df_gadm["geometry"] = df_gadm["geometry"].apply(
