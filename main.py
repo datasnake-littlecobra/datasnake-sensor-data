@@ -3,7 +3,7 @@ import polars as pl
 from datetime import datetime, timedelta
 from reader.log_reader import LogReader
 from storage.delta_writer import DeltaWriter
-
+import logging
 from storage.cassandra_writer import CassandraWriter
 from geoprocessor.search_locations import WeatherDataLocationSearcher
 
@@ -34,13 +34,16 @@ def main():
     # enriched_weather_df = searcher.enrich_weather_data_batch(weather_data_df[search_locations_columns_coordinates], batch_size=500)
     t2 = datetime.now()
     total = t2 - t1
-    print(f"it took {total} to search the enrich_weather_data_batch")
+    logging.info(f"it took {total} to search the enrich_weather_data_batch")
     t1 = datetime.now()
     enriched_weather_df = searcher.enrich_weather_data_optimized(weather_data_df)
     t2 = datetime.now()
     total = t2 - t1
-    print(f"it took {total} to search the enrich_weather_data")
-    print(enriched_weather_df.head())
+    logging.info(f"it took {total} to search the enrich_weather_data")
+    logging.info(enriched_weather_df.head())
+    logging.info(f"total rows: {len(enriched_weather_df)}")
+    
+    return
 
     # handle nulls for deltalake valid data type storage
     enriched_weather_df = enriched_weather_df.with_columns(
@@ -57,7 +60,7 @@ def main():
     delta_writer.write_to_deltalake(enriched_weather_df)
     t2 = datetime.now()
     total = t2 - t1
-    print(f"it took {total} to insert into deltalake")
+    logging.info(f"it took {total} to insert into deltalake")
 
     # Write to Cassandra
     t1 = datetime.now()
@@ -65,8 +68,8 @@ def main():
     cassandra_writer.write_to_cassandra_batch_concurrent(enriched_weather_df)
     t2 = datetime.now()
     total = t2 - t1
-    print(f"it took {total} to insert into cassandra")
-    print(enriched_weather_df.head())
+    logging.info(f"it took {total} to insert into cassandra")
+    logging.info(enriched_weather_df.head())
 
 
 if __name__ == "__main__":

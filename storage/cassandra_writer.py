@@ -126,4 +126,4 @@ class CassandraWriter:
                 if not success:
                     logging.error(f"Write failed: {result}")
         except Exception as e:
-                print(f"exception occurred writing to processed sensor deltalake:" , e)
+                logging.error(f"exception occurred writing to processed sensor deltalake:" , e)
