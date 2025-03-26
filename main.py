@@ -25,7 +25,7 @@ def main():
     # weather_data_df = pl.DataFrame(weather_data_df)
     logging.info(weather_data_df.head())
     logging.info(f"total weather_data_df length of rows : {len(weather_data_df)}")
-    return
+    # return
     # save to pre-processing deltalake / cassandra
 
     # Enrich with location

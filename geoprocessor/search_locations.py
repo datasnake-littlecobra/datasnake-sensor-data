@@ -1,5 +1,6 @@
 import os
 from deltalake import DeltaTable
+import logging
 import polars as pl
 import geopandas as gpd
 from shapely.geometry import Point
@@ -424,6 +425,7 @@ class WeatherDataLocationSearcher:
 
     def enrich_weather_data_optimized(self, weather_data_df):
         try:
+            logging.info(f"total rows incoming: {len(weather_data_df)}")
             if weather_data_df is None or weather_data_df.is_empty():
                 return pl.DataFrame([])
 
@@ -431,7 +433,7 @@ class WeatherDataLocationSearcher:
             count = 0
             for row in weather_data_df.iter_rows(named=True):
                 count = count + 1
-                print(row)
+                # print(row)
                 lat, lon = row.get("lat"), row.get("lon")
                 if lat is None or lon is None:
                     continue
@@ -452,9 +454,10 @@ class WeatherDataLocationSearcher:
                     if wof_result is not None and not wof_result.is_empty()
                     else None
                 )
-                print(
-                    f"it took {total} to search wof_result for count {count} with postal code: {postal_code}"
-                )
+                # print(
+                #     f"it took {total} to search wof_result for count {count} with postal code: {postal_code}"
+                # )
+                logging.info(f"count so far: {count}")
                 enriched_rows.append(
                     {
                         "postal_code": postal_code,

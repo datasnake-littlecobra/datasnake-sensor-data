@@ -21,7 +21,7 @@ CREATE TABLE sensor_data_raw (
 );
 
 CREATE TABLE sensor_data_processed (
-    id UUID PRIMARY KEY,
+    id UUID,
     timestamp TIMESTAMP,
     topic TEXT,
     device_id TEXT,
@@ -40,5 +40,6 @@ CREATE TABLE sensor_data_processed (
     country TEXT,
     postal_code TEXT, 
     nearby_postal_codes LIST<TEXT>, 
-    processed_at TIMESTAMP
-);
+    processed_at TIMESTAMP,
+    PRIMARY KEY ((country, state), postal_code, timestamp, id)
+) WITH CLUSTERING ORDER BY (postal_code ASC, timestamp DESC);
