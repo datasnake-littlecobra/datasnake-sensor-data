@@ -8,7 +8,8 @@ PIP_BIN="$PYTHON_BIN -m pip"
 PROJECT_DIR="/home/dev/datasnake-sensor-data"
 VENV_DIR="$PROJECT_DIR/venv"
 VENV_DIR_NAME="venv"
-
+VENV_PYTHON_BIN="$VENV_DIR/bin/python"
+VENV_PIP_BIN="$VENV_DIR/bin/python -m pip"
 # Upgrade pip
 # echo "Upgrading pip..."
 # $VENV_DIR/bin/python -m pip install --upgrade pip
@@ -141,8 +142,8 @@ echo "Activating virtual environment..."
 source "$VENV_DIR/bin/activate"
 
 # Confirm the environment by checking Python executable
-echo "Using Python at to run code: $(which python3.12)"
-echo "Pip list before running code: $($PIP_BIN list)"
+echo "Using Python at to run code: $(which $VENV_PYTHON_BIN)"
+echo "Pip list before running code: $($VENV_PIP_BIN list)"
 
 # Step 3.6: Run your Python script or entry point (e.g., main.py)
 $VENV_DIR/bin/python /home/dev/datasnake-sensor-data/main.py
