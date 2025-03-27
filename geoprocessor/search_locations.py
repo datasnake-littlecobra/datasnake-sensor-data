@@ -192,7 +192,7 @@ class WeatherDataLocationSearcher:
             # Load GADM1 geopackage into GeoPolars
             df_gadm = gpd.read_file(read_paths[level])
             # gdf = gpd.read_file(r'path/to/file.gpkg', engine='pyogrio', use_arrow=True)
-            
+
             # Check if the geometry is in WKB format and convert to WKT
             if df_gadm.geometry.dtype == "object":  # Check if geometry is in WKB
                 df_gadm["geometry"] = df_gadm["geometry"].apply(
@@ -479,7 +479,7 @@ class WeatherDataLocationSearcher:
                         "timestamp": row.get("timestamp"),
                     }
                 )
-
+            logging.info(f"Length of enriched_rows array: {len(enriched_rows)}")
             return pl.DataFrame(enriched_rows) if enriched_rows else pl.DataFrame([])
 
         except Exception as e:

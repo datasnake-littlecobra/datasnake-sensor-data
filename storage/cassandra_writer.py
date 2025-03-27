@@ -10,6 +10,7 @@ from cassandra.auth import PlainTextAuthProvider
 from cassandra.policies import DCAwareRoundRobinPolicy
 from cassandra.concurrent import execute_concurrent_with_args
 
+
 class CassandraWriter:
     def __init__(self, keyspace, table):
         # self.cluster = Cluster(["127.0.0.1"])
@@ -30,15 +31,15 @@ class CassandraWriter:
         self.session = cluster.connect()
         self.session.set_keyspace(keyspace)
         print("cassandra connection established!")
-        
+
     def row_generator(dataframe, columns):
         for row in dataframe.iter_rows(named=True):
             yield tuple(row[col] if col in row else None for col in columns)
 
     def write_to_cassandra_simple(self, weather_data_processed_df):
         try:
-            print('keyspace:', self.keyspace)
-            print('table:', self.table)
+            logging.info(f"keyspace: {self.keyspace} ")
+            logging.info(f"table: {self.table}")
             query = f"""
                     INSERT INTO {self.keyspace}.{self.table} (
                         id, timestamp, topic, temp, humidity, pressure, lat, lon, alt, sats, 
@@ -51,33 +52,35 @@ class CassandraWriter:
 
             data = []
             for row in weather_data_processed_df.to_dicts():
-                data.append((
-                    uuid.uuid4(),  # Generating a random UUID for the primary key
-                    datetime.now(),  # Using current timestamp as processed timestamp
-                    "weather/Data",
-                    row.get("temp", 0.0),  # Default to 0.0 if missing
-                    row.get("humidity", 0.0),  # Default to 0.0
-                    row.get("pressure", 0.0),  # Default to 0.0
-                    row.get("lat", 0.0),
-                    row.get("lon", 0.0),
-                    row.get("alt", 0.0),  # Default altitude
-                    row.get("sats", 0),  # Default satellites count
-                    "dummy_county",  # Dummy county
-                    row.get("city", "unknown"),
-                    row.get("state", "unknown"),
-                    row.get("country", "unknown"),
-                    row.get("postal_code", "00000"),
-                    ["00001", "00002"],  # Dummy list of nearby postal codes
-                    datetime.utcnow()  # Processed timestamp
-                ))
+                data.append(
+                    (
+                        uuid.uuid4(),  # Generating a random UUID for the primary key
+                        datetime.now(),  # Using current timestamp as processed timestamp
+                        "weather/Data",
+                        row.get("temp", 0.0),  # Default to 0.0 if missing
+                        row.get("humidity", 0.0),  # Default to 0.0
+                        row.get("pressure", 0.0),  # Default to 0.0
+                        row.get("lat", 0.0),
+                        row.get("lon", 0.0),
+                        row.get("alt", 0.0),  # Default altitude
+                        row.get("sats", 0),  # Default satellites count
+                        "dummy_county",  # Dummy county
+                        row.get("city", "unknown"),
+                        row.get("state", "unknown"),
+                        row.get("country", "unknown"),
+                        row.get("postal_code", "00000"),
+                        ["00001", "00002"],  # Dummy list of nearby postal codes
+                        datetime.utcnow(),  # Processed timestamp
+                    )
+                )
 
             # Execute batch insert
             for row in data:
                 self.session.execute(prepared, row)
                 print("Data inserted successfully:", row)
         except Exception as e:
-                print(f"exception occurred writing to processed sensor deltalake:" , e)
-                
+            print(f"exception occurred writing to processed sensor deltalake:", e)
+
     def write_to_cassandra_batch_concurrent(self, weather_data_processed_df):
         try:
             # print('keyspace:', self.keyspace)
@@ -94,31 +97,33 @@ class CassandraWriter:
 
             data = []
             for row in weather_data_processed_df.to_dicts():
-                data.append((
-                    uuid.uuid4(),  # Generating a random UUID for the primary key
-                    datetime.now(),  # Using current timestamp as processed timestamp
-                    "weather/Data",
-                    row.get("temp", 0.0),  # Default to 0.0 if missing
-                    row.get("humidity", 0.0),  # Default to 0.0
-                    row.get("pressure", 0.0),  # Default to 0.0
-                    row.get("lat", 0.0),
-                    row.get("lon", 0.0),
-                    row.get("alt", 0.0),  # Default altitude
-                    row.get("sats", 0),  # Default satellites count
-                    "dummy_county",  # Dummy county
-                    row.get("city", "unknown"),
-                    row.get("state", "unknown"),
-                    row.get("country", "unknown"),
-                    row.get("postal_code", "00000"),
-                    ["00001", "00002"],  # Dummy list of nearby postal codes
-                    datetime.utcnow()  # Processed timestamp
-                ))
+                data.append(
+                    (
+                        uuid.uuid4(),  # Generating a random UUID for the primary key
+                        datetime.now(),  # Using current timestamp as processed timestamp
+                        "weather/Data",
+                        row.get("temp", 0.0),  # Default to 0.0 if missing
+                        row.get("humidity", 0.0),  # Default to 0.0
+                        row.get("pressure", 0.0),  # Default to 0.0
+                        row.get("lat", 0.0),
+                        row.get("lon", 0.0),
+                        row.get("alt", 0.0),  # Default altitude
+                        row.get("sats", 0),  # Default satellites count
+                        "dummy_county",  # Dummy county
+                        row.get("city", "unknown"),
+                        row.get("state", "unknown"),
+                        row.get("country", "unknown"),
+                        row.get("postal_code", "00000"),
+                        ["00001", "00002"],  # Dummy list of nearby postal codes
+                        datetime.utcnow(),  # Processed timestamp
+                    )
+                )
 
             # Execute batch insert
             results = execute_concurrent_with_args(
-                self.session, prepared, data, concurrency=20
+                self.session, prepared, data, concurrency=30
             )
-            
+
             # Log any errors
             for success, result in results:
                 if success:
@@ -126,4 +131,6 @@ class CassandraWriter:
                 if not success:
                     logging.error(f"Write failed: {result}")
         except Exception as e:
-                logging.error(f"exception occurred writing to processed sensor deltalake:" , e)
+            logging.error(
+                f"exception occurred writing to processed sensor deltalake:", e
+            )
