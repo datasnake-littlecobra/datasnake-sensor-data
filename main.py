@@ -43,7 +43,7 @@ def main():
     logging.info(enriched_weather_df.head())
     logging.info(f"total length rows: {len(enriched_weather_df)}")
     
-    return
+    # return
 
     # handle nulls for deltalake valid data type storage
     enriched_weather_df = enriched_weather_df.with_columns(

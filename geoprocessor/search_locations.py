@@ -436,12 +436,12 @@ class WeatherDataLocationSearcher:
                 # print(row)
                 lat, lon = row.get("lat"), row.get("lon")
                 if lat is None or lon is None:
-                    logging.info(f"found None lat or long : {lat} :: {lon}")
+                    # logging.info(f"found None lat or long : {lat} :: {lon}")
                     continue
 
                 country, state, city = self.find_location(lat, lon)
                 if not country or not state:
-                    logging.info(f"found None country or state : {country} : {state}")
+                    # logging.info(f"found None country or state : {country} : {state}")
                     continue
 
                 t1 = datetime.now()
@@ -456,12 +456,12 @@ class WeatherDataLocationSearcher:
                     if wof_result is not None and not wof_result.is_empty()
                     else None
                 )
-                logging.info(
-                    f"postal code: {postal_code} is of type {type(postal_code)}"
-                )
+                # logging.info(
+                #     f"postal code: {postal_code} is of type {type(postal_code)}"
+                # )
 
                 if postal_code in ["00000", 00000]:
-                    logging.info("found 00000 postal code")
+                    # logging.info("found 00000 postal code")
                     continue
 
                 # print(
