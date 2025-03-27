@@ -436,10 +436,12 @@ class WeatherDataLocationSearcher:
                 # print(row)
                 lat, lon = row.get("lat"), row.get("lon")
                 if lat is None or lon is None:
+                    logging.info(f"found None lat or long : {lat} :: {lon}")
                     continue
 
                 country, state, city = self.find_location(lat, lon)
                 if not country or not state:
+                    logging.info(f"found None country or state : {country} : {state}")
                     continue
 
                 t1 = datetime.now()
