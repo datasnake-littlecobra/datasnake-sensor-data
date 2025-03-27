@@ -454,12 +454,14 @@ class WeatherDataLocationSearcher:
                     if wof_result is not None and not wof_result.is_empty()
                     else None
                 )
-                logging.info(f"postal code: {wof_result["postal_code"].item(0)} is of type {type(wof_result["postal_code"].item(0))}")
+                logging.info(
+                    f"postal code: {postal_code} is of type {type(postal_code)}"
+                )
 
-                if wof_result["postal_code"].item(0) in ["00000", 00000]:
+                if postal_code in ["00000", 00000]:
                     logging.info("found 00000 postal code")
                     continue
-                
+
                 # print(
                 #     f"it took {total} to search wof_result for count {count} with postal code: {postal_code}"
                 # )
