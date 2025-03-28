@@ -67,7 +67,7 @@ class DeltaWriter:
                 table_or_uri=sensor_s3_uri,
                 storage_options=storage_options,
                 data=weather_data_processed_df,  # Convert Polars DataFrame to Arrow Table
-                mode="append",
+                mode="overwrite",
                 partition_by=["country", "state"],  # Specify partition keys
             )
             logging.info(f"written successfully to deltalake")
@@ -84,7 +84,7 @@ class DeltaWriter:
             write_deltalake(
                 table_or_uri=sensor_data_processed_local_path,
                 data=weather_data_processed_df,
-                mode="append",
+                mode="overwrite",
                 partition_by=["country", "state"]
             )
             logging.info(f"written successfully to deltalake")
