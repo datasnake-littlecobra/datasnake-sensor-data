@@ -70,12 +70,10 @@ class DeltaWriter:
                 mode="overwrite",
                 partition_by=["country", "state"],  # Specify partition keys
             )
-            logging.info(f"written successfully to deltalake")
+            logging.info("written successfully to deltalake")
         except Exception as e:
-            print(f"exception occurred writing to processed sensor deltalake:", e)
-            logging.info(
-                f"exception occurred writing to processed sensor deltalake:", e
-            )
+            # print(f"exception occurred writing to processed sensor deltalake:", e)
+            logging.info("exception occurred writing to processed sensor deltalake:", e)
 
     def write_to_deltalake_dev(self, weather_data_processed_df):
         print("writing to deltalake:", type(weather_data_processed_df))
@@ -85,11 +83,9 @@ class DeltaWriter:
                 table_or_uri=sensor_data_processed_local_path,
                 data=weather_data_processed_df,
                 mode="overwrite",
-                partition_by=["country", "state"]
+                partition_by=["country", "state"],
             )
-            logging.info(f"written successfully to deltalake")
+            logging.info("written successfully to deltalake")
         except Exception as e:
-            print(f"exception occurred writing to processed sensor deltalake:", e)
-            logging.info(
-                f"exception occurred writing to processed sensor deltalake:", e
-            )
+            # print("exception occurred writing to processed sensor deltalake:", e)
+            logging.info("exception occurred writing to processed sensor deltalake:", e)
