@@ -15,8 +15,8 @@ sensor_s3_uri = f"s3://{sensor_delta_s3_bucket_raw_prod}/{sensor_delta_s3_key_ra
 sensor_data_processed_local_path = "deltalake-sensor-data-processed"
 
 storage_options = {
-    "AWS_ACCESS_KEY_ID": "WKTYEZ3TCVAL82EFK6JS",
-    "AWS_SECRET_ACCESS_KEY": "GaVnsqcTgQt6UYeNdke6jv9JpNhKmj7QumlhCDKV",
+    "AWS_ACCESS_KEY_ID": "",
+    "AWS_SECRET_ACCESS_KEY": "",
     "AWS_ENDPOINT": f"https://{hostname}",
     "AWS_REGION": "us-east-1",
     "AWS_S3_ADDRESSING_STYLE": "path",

@@ -18,8 +18,8 @@ class CassandraWriter:
         self.keyspace = keyspace
         self.table = table
         # self.session.set_keyspace(keyspace)
-        USERNAME = "cassandra"
-        PASSWORD = "cassandra"
+        USERNAME = ""
+        PASSWORD = ""
         CASSANDRA_HOSTS = ["127.0.0.1"]
         auth_provider = PlainTextAuthProvider(USERNAME, PASSWORD)
         cluster = Cluster(

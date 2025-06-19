@@ -28,8 +28,8 @@ deltalake_gadm_s3_uri = {
 deltalake_wof_s3_uri = f"s3://deltalake-gadm/gadm_combined"
 
 # Connect to the Cassandra cluster
-# USERNAME = "cassandra"
-# PASSWORD = "cassandra"
+# USERNAME = ""
+# PASSWORD = ""
 # auth_provider = PlainTextAuthProvider(USERNAME, PASSWORD)
 # cluster = Cluster(
 #     ["127.0.0.1"], auth_provider=auth_provider
@@ -40,8 +40,8 @@ deltalake_wof_s3_uri = f"s3://deltalake-gadm/gadm_combined"
 # # Use the keyspace
 # session.set_keyspace("test_keyspace")
 
-sensor_delta_s3_bucket_raw_prod = f"datasnake"
-sensor_delta_s3_key_raw_prod = f"deltalake_sensor_data_processed"
+sensor_delta_s3_bucket_raw_prod = "datasnake"
+sensor_delta_s3_key_raw_prod = "deltalake_sensor_data_processed"
 sensor_s3_uri = f"s3://{sensor_delta_s3_bucket_raw_prod}/{sensor_delta_s3_key_raw_prod}"
 
 sensor_data_processed_local_path = "deltalake-sensor-data-processed"

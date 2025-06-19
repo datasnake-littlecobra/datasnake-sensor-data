@@ -112,14 +112,18 @@ fi
 #     $VENV_DIR/bin/python -m pip install packaging
 # fi
 
-CASSANDRA_HOST="127.0.0.1"
-USERNAME="cassandra"
-PASSWORD="cassandra"
-PROJECT_NAME="datasnake-sensor-data"
-CQL_FILE="/home/dev/${PROJECT_NAME}/db-script.cql"
-echo $CQL_FILE
-cqlsh $CASSANDRA_HOST -u $USERNAME -p $PASSWORD -f $CQL_FILE
+# CASSANDRA_HOST="127.0.0.1"
+# USERNAME=""
+# PASSWORD=""
+# PROJECT_NAME="datasnake-sensor-data"
+# CQL_FILE="/home/dev/${PROJECT_NAME}/db-script.cql"
+# echo $CQL_FILE
+# cqlsh $CASSANDRA_HOST -u $USERNAME -p $PASSWORD -f $CQL_FILE
 
+# RUN CLICKHOUSE DATABASE FILE
+echo "initiating clickhouse-client script..."
+clickhouse-client --host 127.0.0.1 --port 9000 --password $CLICKHOUSE_PWD --multiquery < db-script-clickhouse.sql
+echo "done running clickhouse-client script..."
 
 # Step 3.7: S3 Bucket Creation (Dynamic)
 # project_name="datasnake-sensor-data"

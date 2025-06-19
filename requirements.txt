@@ -1,5 +1,6 @@
 boto3==1.36.17
 cassandra_driver==3.29.2
+clickhouse-connect==0.8.17
 deltalake==0.24.0
 duckdb==1.2.0
 geopandas==1.0.1

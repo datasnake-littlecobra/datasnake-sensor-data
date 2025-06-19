@@ -5,12 +5,13 @@ from reader.log_reader import LogReader
 from storage.delta_writer import DeltaWriter
 import logging
 from storage.cassandra_writer import CassandraWriter
+from storage.clickhouse_writer import ClickHouseWriter
 from geoprocessor.search_locations import WeatherDataLocationSearcher
 
 LOG_FILE = "/home/dev/mqtt-python/mqtt_weather_logs.log"
 PROCESSED_SENSOR_DATA_DELTA_PATH = "/datasnake-deltalake-sensor-data-processed"
-CASSANDRA_KEYSPACE = "datasnake"
-CASSANDRA_TABLE = "sensor_data_processed"
+# CASSANDRA_KEYSPACE = "datasnake"
+# CASSANDRA_TABLE = "sensor_data_processed"
 WOF_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
 # WOF_DELTA_PATH = "deltalake-wof-oregon"
 # GADM_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
@@ -64,13 +65,20 @@ def main():
 
     # Write to Cassandra
     t1 = datetime.now()
-    cassandra_writer = CassandraWriter(CASSANDRA_KEYSPACE, CASSANDRA_TABLE)
-    cassandra_writer.write_to_cassandra_batch_concurrent(enriched_weather_df)
+    # cassandra_writer = CassandraWriter(CASSANDRA_KEYSPACE, CASSANDRA_TABLE)
+    # cassandra_writer.write_to_cassandra_batch_concurrent(enriched_weather_df)
     t2 = datetime.now()
     total = t2 - t1
     logging.info(f"it took {total} to insert into cassandra")
     logging.info(enriched_weather_df.head())
 
+    # Write to Clickhouse
+    t1 = datetime.now()
+    clickhouse_writer = ClickHouseWriter("127.0.0.1","datasnake","sensor_data_processed")
+    clickhouse_writer.write_to_clickhouse_batch(enriched_weather_df)
+    t2 = datetime.now()
+    total = t2 - t1
+    logging.info(f"it took {total} to insert into CLICKHOUSE")
 
 if __name__ == "__main__":
     main()
