@@ -102,7 +102,7 @@ class WeatherDataLocationSearcher:
             # print("reading from gadm_cache", cached_df)
             return pl.from_pandas(cached_df)  # Convert back to Polars DataFrame
 
-        if not all([read_path, lat, long, geom_column]):
+        if any(x is None for x in [read_path, lat, long, geom_column]):
             print(
                 f"Invalid parameters for querying {level}: {read_path}, {lat}, {long}, {geom_column}"
             )
@@ -359,7 +359,9 @@ class WeatherDataLocationSearcher:
                 return pl.DataFrame([])
 
             enriched_rows = []
-
+            print("print sample rows:")
+            print(len(weather_data_df))
+            print(weather_data_df.head(25))
             for row in weather_data_df.iter_rows(named=True):
                 country, state, city = self.find_location(row["lat"], row["lon"])
                 # print(f"{country} | {state} || {city} |||")
@@ -436,12 +438,12 @@ class WeatherDataLocationSearcher:
                 # print(row)
                 lat, lon = row.get("lat"), row.get("lon")
                 if lat is None or lon is None:
-                    # logging.info(f"found None lat or long : {lat} :: {lon}")
+                    logging.info(f"found None lat or long : {lat} :: {lon}")
                     continue
 
                 country, state, city = self.find_location(lat, lon)
                 if not country or not state:
-                    # logging.info(f"found None country or state : {country} : {state}")
+                    logging.info(f"found None country or state : {country} : {state}")
                     continue
 
                 t1 = datetime.now()
