@@ -18,8 +18,13 @@ WOF_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
 
 # search_locations_columns_coordinates = ["lat", "lon"]
 
+def test_writing_times():
+    logging.info("initiating clickhouse batch writing")
+    return None
 
 def main():
+    # test writing times
+    test_writing_times()
     # Read log file
     return_as_dataframe = True
     weather_data_df = LogReader.read_log_file(LOG_FILE, return_as_dataframe)

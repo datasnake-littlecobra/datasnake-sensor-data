@@ -91,10 +91,10 @@ class WeatherDataLocationSearcher:
     def query_gadm_level(
         self, read_path, lat, long, level, geom_column, extract_column
     ):
-        print("inside query_gadm_level:", read_path)
+        # print("inside query_gadm_level:", read_path)
 
         gadm_cache_key = (long, lat, level)
-        print("cache key:", gadm_cache_key)
+        # print("cache key:", gadm_cache_key)
 
         # Check the cache using the correct cache object
         cached_df = gadm_cache.get(gadm_cache_key)
@@ -359,9 +359,9 @@ class WeatherDataLocationSearcher:
                 return pl.DataFrame([])
 
             enriched_rows = []
-            print("print sample rows:")
-            print(len(weather_data_df))
-            print(weather_data_df.head(25))
+            # print("print sample rows:")
+            # print(len(weather_data_df))
+            # print(weather_data_df.head(25))
             for row in weather_data_df.iter_rows(named=True):
                 country, state, city = self.find_location(row["lat"], row["lon"])
                 # print(f"{country} | {state} || {city} |||")

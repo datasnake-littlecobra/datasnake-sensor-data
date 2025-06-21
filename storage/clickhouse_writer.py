@@ -10,7 +10,7 @@ class ClickHouseWriter:
         self.database = database
         self.table = table
 
-        self.client = get_client(host=host, database=database)
+        self.client = get_client(host=host, password="",  database=database)
         logging.info("✅ ClickHouse connection established!")
 
         # Ensure table exists (you can manage this outside if needed)
@@ -51,6 +51,7 @@ class ClickHouseWriter:
                         "id": str(uuid.uuid4()),
                         "timestamp": datetime.now(),
                         "topic": row.get("weather/data", "weather/data"),
+                        "device_id": row.get("device_id",None),
                         "temp": row.get("temp", 0.0),
                         "humidity": row.get("humidity", 0.0),
                         "pressure": row.get("pressure", 0.0),
@@ -58,13 +59,15 @@ class ClickHouseWriter:
                         "lon": row.get("lon", 0.0),
                         "alt": row.get("alt", 0.0),
                         "sats": row.get("sats", 0),
+                        "wind_speed": row.get("wind_speed"),
+                        "wind_direction": row.get("wind_direction"),
                         "county": "dummy_county",
                         "city": row.get("city", "unknown"),
                         "state": row.get("state", "unknown"),
                         "country": row.get("country", "unknown"),
                         "postal_code": row.get("postal_code", "00000"),
                         "nearby_postal_codes": ["00001", "00002"],
-                        "processed_at": datetime.utcnow(),
+                        "processed_at": row.get("timestamp",datetime.utcnow()),
                     }
                 )
 
