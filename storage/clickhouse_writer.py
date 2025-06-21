@@ -5,12 +5,14 @@ from clickhouse_connect import get_client
 
 
 class ClickHouseWriter:
-    def __init__(self, host="127.0.0.1", database="datasnake", table="sensor_data_processed"):
+    def __init__(
+        self, host="127.0.0.1", database="datasnake", table="sensor_data_processed"
+    ):
         self.host = host
         self.database = database
         self.table = table
 
-        self.client = get_client(host=host, password="",  database=database)
+        self.client = get_client(host=host, password="", database=database)
         logging.info("✅ ClickHouse connection established!")
 
         # Ensure table exists (you can manage this outside if needed)
@@ -44,35 +46,57 @@ class ClickHouseWriter:
 
     def write_to_clickhouse_batch(self, weather_data_processed_df):
         try:
-            rows = []
-            for row in weather_data_processed_df.to_dicts():
-                rows.append(
-                    {
-                        "id": str(uuid.uuid4()),
-                        "timestamp": datetime.now(),
-                        "topic": row.get("weather/data", "weather/data"),
-                        "device_id": row.get("device_id",None),
-                        "temp": row.get("temp", 0.0),
-                        "humidity": row.get("humidity", 0.0),
-                        "pressure": row.get("pressure", 0.0),
-                        "lat": row.get("lat", 0.0),
-                        "lon": row.get("lon", 0.0),
-                        "alt": row.get("alt", 0.0),
-                        "sats": row.get("sats", 0),
-                        "wind_speed": row.get("wind_speed"),
-                        "wind_direction": row.get("wind_direction"),
-                        "county": "dummy_county",
-                        "city": row.get("city", "unknown"),
-                        "state": row.get("state", "unknown"),
-                        "country": row.get("country", "unknown"),
-                        "postal_code": row.get("postal_code", "00000"),
-                        "nearby_postal_codes": ["00001", "00002"],
-                        "processed_at": row.get("timestamp",datetime.utcnow()),
-                    }
-                )
+            columns = [
+                "id",
+                "timestamp",
+                "topic",
+                "device_id",
+                "temp",
+                "humidity",
+                "pressure",
+                "lat",
+                "lon",
+                "alt",
+                "sats",
+                "wind_speed",
+                "wind_direction",
+                "county",
+                "city",
+                "state",
+                "country",
+                "postal_code",
+                "nearby_postal_codes",
+                "processed_at",
+            ]
 
-            self.client.insert(self.table, rows)
-            logging.info(f"ClickHouse: Inserted {len(rows)} rows successfully.")
+            data = [
+                (
+                    str(uuid.uuid4()),
+                    datetime.now(),
+                    row.get("topic", "weather/data"),
+                    row.get("device_id", None),
+                    row.get("temp", 0.0),
+                    row.get("humidity", 0.0),
+                    row.get("pressure", 0.0),
+                    row.get("lat", 0.0),
+                    row.get("lon", 0.0),
+                    row.get("alt", 0.0),
+                    row.get("sats", 0),
+                    row.get("wind_speed"),
+                    row.get("wind_direction"),
+                    "dummy_county",
+                    row.get("city", "unknown"),
+                    row.get("state", "unknown"),
+                    row.get("country", "unknown"),
+                    row.get("postal_code", "00000"),
+                    ["00001", "00002"],
+                    row.get("timestamp", datetime.utcnow()),
+                )
+                for row in weather_data_processed_df.to_dicts()
+            ]
+
+            self.client.insert(self.table, data, columns=columns)
+            logging.info(f"ClickHouse: Inserted {len(data)} rows successfully.")
 
         except Exception as e:
             logging.error("Exception occurred writing to ClickHouse:", exc_info=e)
