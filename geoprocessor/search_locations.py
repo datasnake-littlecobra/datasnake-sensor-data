@@ -138,7 +138,7 @@ class WeatherDataLocationSearcher:
             read_paths["ADM0"], lat, lon, "ADM0", "geom", "shapeGroup"
         )
 
-        print(adm0_result.head())
+        # print(adm0_result.head())
         if adm0_result is None or adm0_result.is_empty():
             return None, None, None
 
@@ -166,7 +166,7 @@ class WeatherDataLocationSearcher:
             return None, None, None
 
         city_county = adm2_result["shapeName"][0]
-        # print("found ADM1 state:", state)
+        print("found ADM1 city_county:", city_county)
 
         return country, state, city_county
 
