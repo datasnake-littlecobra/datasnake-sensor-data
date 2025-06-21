@@ -138,13 +138,13 @@ class WeatherDataLocationSearcher:
             read_paths["ADM0"], lat, lon, "ADM0", "geom", "shapeGroup"
         )
 
-        # print(adm0_result.head())
+        print(adm0_result.head())
         if adm0_result is None or adm0_result.is_empty():
             return None, None, None
 
         country = adm0_result["shapeGroup"][0]
-        country = country_code_mapping[country]
-        # print("found ADM0 country:", country)
+        country = country_code_mapping.get(country,country)
+        print("found ADM0 country:", country)
 
         adm1_result = self.query_gadm_level(
             read_paths["ADM1"], lat, lon, "ADM1", "geom", "shapeName"
@@ -155,7 +155,7 @@ class WeatherDataLocationSearcher:
             return None, None, None
 
         state = adm1_result["shapeName"][0]
-        # print("found ADM1 state:", state)
+        print("found ADM1 state:", state)
 
         adm2_result = self.query_gadm_level(
             read_paths["ADM2"], lat, lon, "ADM2", "geom", "shapeName"
