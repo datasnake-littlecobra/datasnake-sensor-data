@@ -91,10 +91,10 @@ class WeatherDataLocationSearcher:
     def query_gadm_level(
         self, read_path, lat, long, level, geom_column, extract_column
     ):
-        # print("inside query_gadm_level:", read_path)
+        print("inside query_gadm_level:", read_path)
 
         gadm_cache_key = (long, lat, level)
-        # print("cache key:", gadm_cache_key)
+        print("cache key:", gadm_cache_key)
 
         # Check the cache using the correct cache object
         cached_df = gadm_cache.get(gadm_cache_key)
@@ -467,7 +467,7 @@ class WeatherDataLocationSearcher:
                 # print(
                 #     f"it took {total} to search wof_result for count {count} with postal code: {postal_code}"
                 # )
-                logging.info(f"count so far: {count}")
+                # logging.info(f"count so far: {count}")
                 enriched_rows.append(
                     {
                         "postal_code": postal_code,
