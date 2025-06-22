@@ -44,7 +44,7 @@ class ClickHouseWriter:
     #     """
     #     self.client.command(create_query)
 
-    def write_to_clickhouse_batch(self, weather_data_processed_df):
+    def write_to_clickhouse_batch_old(self, weather_data_processed_df):
         try:
             rows = []
             for row in weather_data_processed_df.to_dicts():
@@ -97,3 +97,73 @@ class ClickHouseWriter:
 
         except Exception as e:
             logging.error("Exception occurred writing to ClickHouse:", exc_info=e)
+
+
+    def write_to_clickhouse_batch(self, weather_data_processed_df):
+        try:
+            # Prepare insert columns in the correct order
+            columns = [
+                "id",
+                "timestamp",
+                "topic",
+                "device_id",
+                "temp",
+                "humidity",
+                "pressure",
+                "lat",
+                "lon",
+                "alt",
+                "sats",
+                "wind_speed",
+                "wind_direction",
+                "county",
+                "city",
+                "state",
+                "country",
+                "postal_code",
+                "nearby_postal_codes",
+                "processed_at",
+            ]
+
+            # Transform Polars rows to list of tuples for ClickHouse
+            rows = []
+            for row in weather_data_processed_df.to_dicts():
+                rows.append(
+                    (
+                        str(uuid.uuid4()),
+                        datetime.utcnow(),
+                        row.get("topic", "weather/data") or "weather/data",
+                        row.get("device_id") or "",
+                        row.get("temp") if row.get("temp") is not None else 0.0,
+                        row.get("humidity") if row.get("humidity") is not None else 0.0,
+                        row.get("pressure") if row.get("pressure") is not None else 0.0,
+                        row.get("lat") if row.get("lat") is not None else 0.0,
+                        row.get("lon") if row.get("lon") is not None else 0.0,
+                        row.get("alt") if row.get("alt") is not None else 0.0,
+                        row.get("sats") if row.get("sats") is not None else 0,
+                        (
+                            row.get("wind_speed")
+                            if row.get("wind_speed") is not None
+                            else 0.0
+                        ),
+                        (
+                            row.get("wind_direction")
+                            if row.get("wind_direction") is not None
+                            else 0.0
+                        ),
+                        "dummy_county",  # or row.get("county", "unknown") if present
+                        row.get("city") or "unknown",
+                        row.get("state") or "unknown",
+                        row.get("country") or "unknown",
+                        row.get("postal_code") or "00000",
+                        ["00001", "00002"],  # Array(String)
+                        row.get("timestamp") or datetime.utcnow(),
+                    )
+                )
+
+            # Insert using ClickHouse Connect
+            self.client.insert(self.table, rows, column_names=columns)
+            logging.info(f"✅ ClickHouse: Inserted {len(rows)} rows successfully.")
+
+        except Exception as e:
+            logging.error("❌ Exception occurred writing to ClickHouse:", exc_info=e)
