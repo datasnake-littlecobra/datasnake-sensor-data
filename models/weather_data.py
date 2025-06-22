@@ -1,6 +1,7 @@
 import json
 import re
 from datetime import datetime
+from dateutil.parser import parse as parse_date
 
 
 class WeatherData:
@@ -28,7 +29,8 @@ class WeatherData:
         self.sats = sats
         self.wind_speed = wind_speed
         self.wind_direction = wind_direction
-        self.timestamp = timestamp or datetime.utcnow().isoformat()
+        # self.timestamp = timestamp or datetime.utcnow().isoformat()
+        self.timestamp = parse_date(timestamp) if timestamp else datetime.utcnow()
 
     @classmethod
     def from_json(cls, json_str, timestamp=None):

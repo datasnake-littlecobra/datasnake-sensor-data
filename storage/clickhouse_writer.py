@@ -2,6 +2,7 @@ import uuid
 import logging
 from datetime import datetime
 from clickhouse_connect import get_client
+from dateutil.parser import parse as parse_date
 
 
 class ClickHouseWriter:
@@ -98,7 +99,6 @@ class ClickHouseWriter:
         except Exception as e:
             logging.error("Exception occurred writing to ClickHouse:", exc_info=e)
 
-
     def write_to_clickhouse_batch(self, weather_data_processed_df):
         try:
             # Prepare insert columns in the correct order
@@ -157,7 +157,11 @@ class ClickHouseWriter:
                         row.get("country") or "unknown",
                         row.get("postal_code") or "00000",
                         ["00001", "00002"],  # Array(String)
-                        row.get("timestamp") or datetime.utcnow(),
+                        (
+                            parse_date(row.get("timestamp"))
+                            if isinstance(row.get("timestamp"), str)
+                            else row.get("timestamp") or datetime.utcnow()
+                        ),
                     )
                 )
 
