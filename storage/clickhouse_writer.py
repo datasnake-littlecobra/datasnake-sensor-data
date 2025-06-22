@@ -13,7 +13,7 @@ class ClickHouseWriter:
         self.table = table
 
         self.client = get_client(host=host, password="", database=database)
-        logging.info("✅ ClickHouse connection established!")
+        logging.info("ClickHouse connection established!")
 
         # Ensure table exists (you can manage this outside if needed)
         # self._ensure_table()
