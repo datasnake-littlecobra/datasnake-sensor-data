@@ -166,9 +166,9 @@ class ClickHouseWriter:
                 )
 
             # Insert using ClickHouse Connect
-            if rows:
-                self.client.insert(self.table, rows, column_names=columns)
-                logging.info(f"✅ ClickHouse: Inserted {len(rows)} rows successfully.")
+            # if rows:
+            self.client.insert(self.table, rows, column_names=columns)
+            logging.info(f"✅ ClickHouse: Inserted {len(rows)} rows successfully.")
 
         except Exception as e:
             logging.error("❌ Exception occurred writing to ClickHouse:", exc_info=e)

@@ -29,7 +29,7 @@ def process_batch(batch_df, searcher, delta_writer, clickhouse_writer, start, en
 
     # Delta write
     t1 = datetime.now()
-    delta_writer.write_to_deltalake(enriched_df)
+    # delta_writer.write_to_deltalake(enriched_df)
     t2 = datetime.now()
     logging.info(f"📦 DeltaLake write time: {t2 - t1}")
 
