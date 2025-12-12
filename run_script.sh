@@ -122,7 +122,7 @@ fi
 
 # RUN CLICKHOUSE DATABASE FILE
 echo "initiating clickhouse-client script..."
-clickhouse-client --host 127.0.0.1 --port 9000 --password $CLICKHOUSE_PWD --multiquery < db-script-clickhouse.sql
+clickhouse-client --host 127.0.0.1 --port 9000 --password $CLICKHOUSE_PASSWORD --multiquery < db-script-clickhouse.sql
 echo "done running clickhouse-client script..."
 
 # Step 3.7: S3 Bucket Creation (Dynamic)
