@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS sensor_data_raw (
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMM(timestamp)
-ORDER BY (device_id, timestamp);
+ORDER BY (timestamp, device_id)
+TTL timestamp + INTERVAL 30 DAY;
 
 -- Create sensor_data_processed table if not exists
 CREATE TABLE IF NOT EXISTS sensor_data_processed (
@@ -51,4 +52,5 @@ CREATE TABLE IF NOT EXISTS sensor_data_processed (
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMM(timestamp)
-ORDER BY (country, state, postal_code, timestamp, id);
+ORDER BY (country, state, postal_code, timestamp)
+TTL timestamp + INTERVAL 90 DAY;

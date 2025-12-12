@@ -18,7 +18,7 @@ def generate_timeseries_weather_data(n_rows: int) -> pl.DataFrame:
         "country": ["USA"] * n_rows,
         "state": [random.choice(states) for _ in range(n_rows)],
         "county": [random.choice(counties) for _ in range(n_rows)],
-        "zip_code": [random.choice(zip_codes) for _ in range(n_rows)],
+        "postal_code": [random.choice(zip_codes) for _ in range(n_rows)],
         "temp": [round(random.uniform(15.0, 35.0), 2) for _ in range(n_rows)],
         "wind_speed": [round(random.uniform(0.0, 25.0), 2) for _ in range(n_rows)],
     }
@@ -28,19 +28,19 @@ def generate_timeseries_weather_data(n_rows: int) -> pl.DataFrame:
 def setup_table(client):
     client.command(
         """
-    CREATE TABLE IF NOT EXISTS datasnake.timeseries_weather (
-        id UUID,
-        created_at DateTime,
-        country String,
-        state String,
-        county String,
-        zip_code String,
-        temp Float32,
-        wind_speed Float32
-    ) ENGINE = MergeTree
-    PARTITION BY toYYYYMM(created_at)
-    ORDER BY (zip_code, created_at)
-    """
+        CREATE TABLE IF NOT EXISTS datasnake.timeseries_weather (
+            id UUID,
+            created_at DateTime,
+            country String,
+            state String,
+            county String,
+            postal_code String,
+            temp Float32,
+            wind_speed Float32
+        ) ENGINE = MergeTree
+        PARTITION BY toYYYYMM(created_at)
+        ORDER BY (postal_code, created_at)
+        """
     )
     print("✅ Table ready.")
 
@@ -52,9 +52,22 @@ def insert_and_query(n_rows: int):
     client = get_client(host="127.0.0.1", database="datasnake")
     setup_table(client)
 
+    # Convert to tuples and insert
+    columns = [
+        "id",
+        "created_at",
+        "country",
+        "state",
+        "county",
+        "postal_code",
+        "temp",
+        "wind_speed",
+    ]
+    tuples = [tuple(row) for row in df.iter_rows()]
+
     # Insert
     start = time.time()
-    client.insert("timeseries_weather", df.to_dicts())
+    client.insert("timeseries_weather", tuples, column_names=columns)
     duration = time.time() - start
     print(f"📝 Inserted {n_rows:,} rows in {duration:.2f}s")
 
@@ -62,19 +75,20 @@ def insert_and_query(n_rows: int):
     start = time.time()
     result = client.query(
         """
-        SELECT zip_code, AVG(temp) 
+        SELECT postal_code, AVG(temp) 
         FROM datasnake.timeseries_weather 
-        GROUP BY zip_code 
+        GROUP BY postal_code 
         ORDER BY AVG(temp) DESC 
         LIMIT 10
-    """
+        """
     )
     duration = time.time() - start
     print(f"📊 Query returned {len(result.result_rows)} rows in {duration:.2f}s")
     print("Top rows:", result.result_rows)
 
 
-# Try with 1M first
+# Try with 10K first, scale up to 1M+
 if __name__ == "__main__":
-    insert_and_query(1_000_000)
-    # You can then scale to 10M, 50M, 100M one-by-one depending on memory
+    insert_and_query(10000)
+    # insert_and_query(1_000_000)
+    # insert_and_query(10_000_000)

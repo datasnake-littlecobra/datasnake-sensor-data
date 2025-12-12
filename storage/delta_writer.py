@@ -67,13 +67,18 @@ class DeltaWriter:
                 table_or_uri=sensor_s3_uri,
                 storage_options=storage_options,
                 data=weather_data_processed_df,  # Convert Polars DataFrame to Arrow Table
-                mode="overwrite",
+                mode="append",
                 partition_by=["country", "state"],  # Specify partition keys
+                writer_engine_version="7",
+                engine_kwargs={
+                    "write_deltalake_rust_kwargs": {
+                        "enable_writer_feature_for": "TimestampWithoutTimezone"
+                    }
+                },
             )
             logging.info("written successfully to deltalake")
         except Exception as e:
-            # print(f"exception occurred writing to processed sensor deltalake:", e)
-            logging.info("exception occurred writing to processed sensor deltalake:", e)
+            logging.error("exception occurred writing to processed sensor deltalake: %s", e, exc_info=True)
 
     def write_to_deltalake_dev(self, weather_data_processed_df):
         print("writing to deltalake:", type(weather_data_processed_df))
@@ -82,10 +87,15 @@ class DeltaWriter:
             write_deltalake(
                 table_or_uri=sensor_data_processed_local_path,
                 data=weather_data_processed_df,
-                mode="overwrite",
+                mode="append",
                 partition_by=["country", "state"],
+                writer_engine_version="7",
+                engine_kwargs={
+                    "write_deltalake_rust_kwargs": {
+                        "enable_writer_feature_for": "TimestampWithoutTimezone"
+                    }
+                },
             )
             logging.info("written successfully to deltalake")
         except Exception as e:
-            # print("exception occurred writing to processed sensor deltalake:", e)
-            logging.info("exception occurred writing to processed sensor deltalake:", e)
+            logging.error("exception occurred writing to processed sensor deltalake: %s", e, exc_info=True)
