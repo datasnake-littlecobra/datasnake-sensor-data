@@ -131,11 +131,7 @@ class ClickHouseWriter:
                 rows.append(
                     (
                         str(uuid.uuid4()),
-                        (
-                            parse_date(row.get("timestamp"))
-                            if isinstance(row.get("timestamp"), str)
-                            else row.get("timestamp") or datetime.utcnow()
-                        ),
+                        datetime.utcnow(),
                         row.get("topic", "weather/data") or "weather/data",
                         row.get("device_id") or "",
                         row.get("temp") if row.get("temp") is not None else 0.0,
@@ -161,12 +157,15 @@ class ClickHouseWriter:
                         row.get("country") or "unknown",
                         row.get("postal_code") or "00000",
                         ["00001", "00002"],  # Array(String)
-                        datetime.utcnow(),
+                        (
+                            parse_date(row.get("timestamp"))
+                            if isinstance(row.get("timestamp"), str)
+                            else row.get("timestamp") or datetime.utcnow()
+                        ),
                     )
                 )
 
             # Insert using ClickHouse Connect
-            # if rows:
             self.client.insert(self.table, rows, column_names=columns)
             logging.info(f"✅ ClickHouse: Inserted {len(rows)} rows successfully.")
 
