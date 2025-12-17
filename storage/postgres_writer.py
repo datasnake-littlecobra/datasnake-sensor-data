@@ -20,7 +20,11 @@ class PostgresWriter:
             return
 
         rows = []
-
+        logging.info("checking the postgres db context")
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT current_database(), current_user")
+            logging.warning(f"WRITER DB CONTEXT: {cur.fetchone()}")
+        # return
         for row in df.to_dicts():
             processed_ts = row.get("timestamp")
 
