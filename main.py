@@ -7,7 +7,7 @@ from storage.postgres_writer import PostgresWriter
 from geoprocessor.search_locations import WeatherDataLocationSearcher
 import logging
 
-LOG_FILE = "/home/dev/mqtt-python/mqtt_weather_logs_small.log"
+LOG_FILE = "/home/dev/mqtt-python/mqtt_weather_logs.log"
 PROCESSED_SENSOR_DATA_DELTA_PATH = "/datasnake-deltalake-sensor-data-processed"
 WOF_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
 BATCH_SIZE = 5000
