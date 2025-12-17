@@ -160,7 +160,7 @@ echo "✅ PostgreSQL schema initialized"
 # Step 3.7: S3 Bucket Creation (Dynamic)
 # project_name="datasnake-sensor-data"
 bucket_name_sensor_processed="deltalake_sensor_data_processed"
-bucket_uri_sensor_processed="s3://$bucket_name_gadm"
+bucket_uri_sensor_processed="s3://$bucket_name_sensor_processed"
 
 # Check if the bucket exists
 if ! s3cmd ls | grep -q "$bucket_uri_sensor_processed"; then
