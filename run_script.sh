@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+
 echo "Before Using Python at: $(which python3.12)"
 # Define Python version explicitly
 PYTHON_BIN="/usr/bin/python3.12"  # Update to the correct path for your Python version
@@ -135,9 +137,13 @@ if [ ! -x "$PSQL_BIN" ]; then
     exit 1
 fi
 
-
 # Run DB + table setup
-$PSQL_BIN -v ON_ERROR_STOP=1 -f db-script-postgres.sql
+# $PSQL_BIN -v ON_ERROR_STOP=1 -f db-script-postgres.sql
+$PSQL_BIN \
+  -v ON_ERROR_STOP=1 \
+  -U admin \
+  -d postgres \
+  -f db-script-postgres.sql
 
 echo "✅ PostgreSQL schema initialized"
 
