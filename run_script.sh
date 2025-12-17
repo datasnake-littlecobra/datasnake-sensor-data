@@ -128,13 +128,16 @@ fi
 echo "🗄️ Initializing PostgreSQL schema..."
 
 # Ensure psql exists
-if ! command -v psql &> /dev/null; then
-    echo "❌ psql not found. PostgreSQL client is required."
+PSQL_BIN="/usr/bin/psql"
+
+if [ ! -x "$PSQL_BIN" ]; then
+    echo "❌ psql not found at $PSQL_BIN"
     exit 1
 fi
 
+
 # Run DB + table setup
-psql -v ON_ERROR_STOP=1 -f db-script-postgres.sql
+$PSQL_BIN -v ON_ERROR_STOP=1 -f db-script-postgres.sql
 
 echo "✅ PostgreSQL schema initialized"
 
