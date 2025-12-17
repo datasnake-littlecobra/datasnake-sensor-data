@@ -12,6 +12,7 @@ class PostgresWriter:
         self.dsn = dsn
         self.table = table
         self.conn = psycopg.connect(dsn)
+        self.conn.autocommit = True
         self.conn.execute("SET timezone = 'UTC'")
         logging.info("PostgreSQL connection established")
 
@@ -88,9 +89,13 @@ class PostgresWriter:
         """
 
         try:
-            with self.conn.transaction():
-                with self.conn.cursor() as cur:
-                    cur.executemany(sql, rows)
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM public.sensor_data_processed")
+                logging.warning(f"POST-INSERT COUNT (same conn): {cur.fetchone()[0]}")
+
+            # with self.conn.transaction():
+            #     with self.conn.cursor() as cur:
+            #         cur.executemany(sql, rows)
 
             logging.info(f"✅ PostgreSQL: inserted {len(rows)} rows")
 
