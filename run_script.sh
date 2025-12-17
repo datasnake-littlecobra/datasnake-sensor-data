@@ -139,11 +139,7 @@ fi
 
 # Run DB + table setup
 # $PSQL_BIN -v ON_ERROR_STOP=1 -f db-script-postgres.sql
-$PSQL_BIN \
-  -v ON_ERROR_STOP=1 \
-  -U admin \
-  -d postgres \
-  -f db-script-postgres.sql
+sudo -u postgres /usr/bin/psql -v ON_ERROR_STOP=1 -f db-script-postgres.sql
 
 echo "✅ PostgreSQL schema initialized"
 

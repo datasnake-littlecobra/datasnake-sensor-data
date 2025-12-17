@@ -50,6 +50,6 @@ jobs:
           cd /home/dev/datasnake-sensor-data
           echo "Current working directory after cd is: $(pwd)"
           chmod +x /home/dev/datasnake-sensor-data/run_script.sh
-          sh /home/dev/datasnake-sensor-data/run_script.sh
+          bash /home/dev/datasnake-sensor-data/run_script.sh
 
           "
