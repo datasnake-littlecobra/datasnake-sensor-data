@@ -1,14 +1,3 @@
--- Create database (CI-safe)
-DO $$
-BEGIN
-   IF NOT EXISTS (
-      SELECT FROM pg_database WHERE datname = 'datasnake'
-   ) THEN
-      CREATE DATABASE datasnake;
-   END IF;
-END
-$$;
-
 \connect datasnake;
 
 -- Extensions (optional but safe)

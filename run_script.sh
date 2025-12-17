@@ -137,9 +137,22 @@ if [ ! -x "$PSQL_BIN" ]; then
     exit 1
 fi
 
+echo "🗄️ Ensuring PostgreSQL database exists..."
+
+sudo -u postgres psql -tc \
+  "SELECT 1 FROM pg_database WHERE datname = 'datasnake'" \
+  | grep -q 1 || sudo -u postgres createdb datasnake
+
+echo "✅ Database datasnake exists"
+
 # Run DB + table setup
 # $PSQL_BIN -v ON_ERROR_STOP=1 -f db-script-postgres.sql
-sudo -u postgres /usr/bin/psql -v ON_ERROR_STOP=1 -f db-script-postgres.sql
+# sudo -u postgres /usr/bin/psql -v ON_ERROR_STOP=1 -f db-script-postgres.sql
+sudo -u postgres /usr/bin/psql \
+  -v ON_ERROR_STOP=1 \
+  -d datasnake \
+  -f db-script-postgres.sql
+
 
 echo "✅ PostgreSQL schema initialized"
 
