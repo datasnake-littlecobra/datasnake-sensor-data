@@ -1,9 +1,24 @@
--- Create database if not exists
-CREATE DATABASE datasnake;
+-- Create database (CI-safe)
+DO $$
+BEGIN
+   IF NOT EXISTS (
+      SELECT FROM pg_database WHERE datname = 'datasnake'
+   ) THEN
+      CREATE DATABASE datasnake;
+   END IF;
+END
+$$;
 
-CREATE TABLE sensor_data_raw
-(
-    id UUID NOT NULL,
+\connect datasnake;
+
+-- Extensions (optional but safe)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- =========================
+-- RAW SENSOR DATA
+-- =========================
+CREATE TABLE IF NOT EXISTS sensor_data_raw (
+    id UUID PRIMARY KEY,
     timestamp TIMESTAMPTZ NOT NULL,
     topic TEXT,
     device_id TEXT,
@@ -21,15 +36,14 @@ CREATE TABLE sensor_data_raw
     wind_direction REAL,
 
     processed BOOLEAN DEFAULT FALSE,
-    status TEXT DEFAULT 'new',
-
-    PRIMARY KEY (id)
+    status TEXT DEFAULT 'new'
 );
 
-
-CREATE TABLE sensor_data_processed
-(
-    id UUID NOT NULL,
+-- =========================
+-- PROCESSED SENSOR DATA
+-- =========================
+CREATE TABLE IF NOT EXISTS sensor_data_processed (
+    id UUID PRIMARY KEY,
     timestamp TIMESTAMPTZ NOT NULL,
     topic TEXT,
     device_id TEXT,
@@ -52,19 +66,6 @@ CREATE TABLE sensor_data_processed
     country TEXT,
     postal_code TEXT,
 
-    nearby_postal_codes TEXT
-    [],
-
-    processed_at TIMESTAMPTZ NOT NULL,
-
-    PRIMARY KEY
-    (id)
+    nearby_postal_codes TEXT[],
+    processed_at TIMESTAMPTZ NOT NULL
 );
-
--- CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
--- ALTER TABLE sensor_data_raw
--- ALTER COLUMN id SET DEFAULT gen_random_uuid();
-
--- ALTER TABLE sensor_data_processed
--- ALTER COLUMN id SET DEFAULT gen_random_uuid();

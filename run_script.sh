@@ -121,9 +121,23 @@ fi
 # cqlsh $CASSANDRA_HOST -u $USERNAME -p $PASSWORD -f $CQL_FILE
 
 # RUN CLICKHOUSE DATABASE FILE
-echo "initiating clickhouse-client script..."
-clickhouse-client --host 127.0.0.1 --port 9000 --password $CLICKHOUSE_PASSWORD --multiquery < db-script-clickhouse.sql
-echo "done running clickhouse-client script..."
+# echo "initiating clickhouse-client script..."
+# clickhouse-client --host 127.0.0.1 --port 9000 --password $CLICKHOUSE_PASSWORD --multiquery < db-script-postgres.sql
+# echo "done running clickhouse-client script..."
+
+echo "🗄️ Initializing PostgreSQL schema..."
+
+# Ensure psql exists
+if ! command -v psql &> /dev/null; then
+    echo "❌ psql not found. PostgreSQL client is required."
+    exit 1
+fi
+
+# Run DB + table setup
+psql -v ON_ERROR_STOP=1 -f db-script-postgres.sql
+
+echo "✅ PostgreSQL schema initialized"
+
 
 # Step 3.7: S3 Bucket Creation (Dynamic)
 # project_name="datasnake-sensor-data"
