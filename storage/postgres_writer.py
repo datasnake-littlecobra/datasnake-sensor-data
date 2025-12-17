@@ -90,14 +90,18 @@ class PostgresWriter:
 
         try:
             with self.conn.cursor() as cur:
+                # ACTUAL INSERT
+                cur.executemany(sql, rows)
+
+                # VERIFY immediately
                 cur.execute("SELECT COUNT(*) FROM public.sensor_data_processed")
                 logging.warning(f"POST-INSERT COUNT (same conn): {cur.fetchone()[0]}")
 
-            # with self.conn.transaction():
-            #     with self.conn.cursor() as cur:
-            #         cur.executemany(sql, rows)
-
             logging.info(f"✅ PostgreSQL: inserted {len(rows)} rows")
+
+        except Exception:
+            logging.exception("❌ PostgreSQL INSERT failed")
+            raise
 
         except Exception:
             logging.exception("❌ PostgreSQL INSERT failed")
