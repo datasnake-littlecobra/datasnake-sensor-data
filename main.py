@@ -1,8 +1,9 @@
+import os
 import polars as pl
 from datetime import datetime
 from reader.log_reader import LogReader
 from storage.delta_writer import DeltaWriter
-from storage.clickhouse_writer import ClickHouseWriter
+from storage.postgres_writer import PostgresWriter
 from geoprocessor.search_locations import WeatherDataLocationSearcher
 import logging
 
@@ -12,7 +13,7 @@ WOF_DELTA_PATH = "/home/resources/deltalake-wof-oregon"
 BATCH_SIZE = 5000
 
 
-def process_batch(batch_df, searcher, delta_writer, clickhouse_writer, start, end):
+def process_batch(batch_df, searcher, delta_writer, postgres_writer, start, end):
     logging.info(f"🚀 Processing batch rows {start} to {end}")
 
     # Enrich
@@ -27,17 +28,17 @@ def process_batch(batch_df, searcher, delta_writer, clickhouse_writer, start, en
     t2 = datetime.now()
     logging.info(f"🗺️  Enrichment time: {t2 - t1}")
 
-    # Delta write
+    # Delta write (optional)
     t1 = datetime.now()
     # delta_writer.write_to_deltalake(enriched_df)
     t2 = datetime.now()
     logging.info(f"📦 DeltaLake write time: {t2 - t1}")
 
-    # ClickHouse insert
+    # Postgres insert
     t1 = datetime.now()
-    clickhouse_writer.write_to_clickhouse_batch(enriched_df)
+    postgres_writer.write_batch(enriched_df)
     t2 = datetime.now()
-    logging.info(f"⚡ ClickHouse write time: {t2 - t1}")
+    logging.info(f"⚡ Postgres write time: {t2 - t1}")
 
 
 def main():
@@ -50,10 +51,16 @@ def main():
         logging.warning("No data to process. Exiting.")
         return
 
+    database_uri = os.getenv("DATABASE_URI")
+    if not database_uri:
+        raise RuntimeError("DATABASE_URI environment variable is not set")
+
     searcher = WeatherDataLocationSearcher(WOF_DELTA_PATH)
     delta_writer = DeltaWriter()
-    clickhouse_writer = ClickHouseWriter(
-        "127.0.0.1", "datasnake", "sensor_data_processed"
+
+    postgres_writer = PostgresWriter(
+        dsn=database_uri,
+        table="sensor_data_processed",
     )
 
     total_rows = len(weather_data_df)
@@ -61,7 +68,7 @@ def main():
     for start in range(0, total_rows, BATCH_SIZE):
         end = min(start + BATCH_SIZE, total_rows)
         batch_df = weather_data_df.slice(start, end - start)
-        process_batch(batch_df, searcher, delta_writer, clickhouse_writer, start, end)
+        process_batch(batch_df, searcher, delta_writer, postgres_writer, start, end)
 
     logging.info("✅ All batches processed successfully.")
 
