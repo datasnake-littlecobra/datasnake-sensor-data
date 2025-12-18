@@ -182,4 +182,4 @@ echo "Using Python at to run code: $(which $VENV_PYTHON_BIN)"
 echo "Pip list before running code: $($VENV_PIP_BIN list)"
 
 # Step 3.6: Run your Python script or entry point (e.g., main.py)
-$VENV_DIR/bin/python /home/dev/datasnake-sensor-data/main.py
+# $VENV_DIR/bin/python /home/dev/datasnake-sensor-data/main.py
