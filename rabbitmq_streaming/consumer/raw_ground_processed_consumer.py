@@ -98,7 +98,9 @@ def on_message(channel, method, properties, body):
                 "processed_at": datetime.utcnow().isoformat(),
                 **row,
             }
-            OUTPUT_LOG.write_text(json.dumps(record) + "\n", append=True)
+            with OUTPUT_LOG.open("a") as f:
+                f.write(json.dumps(record) + "\n")
+
 
             logging.info(
                 f"🧭 PROCESSED | device={row.get('device_id')} "
