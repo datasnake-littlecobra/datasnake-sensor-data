@@ -4,5 +4,6 @@ duckdb==1.2.0
 geopandas==1.0.1
 polars==1.22.0
 Shapely==2.0.7
+pika
 psycopg[binary]==3.*
 python-dateutil
