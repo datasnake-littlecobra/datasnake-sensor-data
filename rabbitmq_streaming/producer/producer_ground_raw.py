@@ -1,3 +1,4 @@
+from datetime import datetime
 import pika
 import time
 import json
@@ -13,7 +14,7 @@ VHOST = os.getenv("RABBITMQ_VHOST")
 EXCHANGE = "sensor.ground.events"
 ROUTING_KEY = "sensor.ground.raw"
 
-LOG_FILE_PATH = "/home/dev/mqtt-python/mqtt_weather_logs.log"
+LOG_FILE_PATH = "/home/dev/mqtt-python/mqtt_weather_distributed_logs.log"
 LOG_FILE = Path(LOG_FILE_PATH)
 POLL_INTERVAL = 10  # seconds
 
@@ -21,9 +22,7 @@ POLL_INTERVAL = 10  # seconds
 def connect():
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
     params = pika.ConnectionParameters(
-        host=RABBITMQ_HOST,
-        virtual_host=VHOST,
-        credentials=credentials
+        host=RABBITMQ_HOST, virtual_host=VHOST, credentials=credentials
     )
     return pika.BlockingConnection(params)
 
@@ -33,11 +32,7 @@ def main():
     channel = connection.channel()
 
     # Declare exchange (safe to call multiple times)
-    channel.exchange_declare(
-        exchange=EXCHANGE,
-        exchange_type="topic",
-        durable=True
-    )
+    channel.exchange_declare(exchange=EXCHANGE, exchange_type="topic", durable=True)
 
     last_size = 0
 
@@ -49,10 +44,7 @@ def main():
                 with LOG_FILE.open() as f:
                     f.seek(last_size)
                     for line in f:
-                        payload = {
-                            "source": "ground_sensor",
-                            "raw": line.strip()
-                        }
+                        payload = {"source": "ground_sensor", "raw": line.strip()}
 
                         channel.basic_publish(
                             exchange=EXCHANGE,
@@ -60,7 +52,20 @@ def main():
                             body=json.dumps(payload),
                             properties=pika.BasicProperties(
                                 delivery_mode=2  # persistent
-                            )
+                            ),
+                        )
+                        # If you want to detect dropped messages, you can publish with:
+                        # channel.basic_publish(
+                        #     exchange=EXCHANGE,
+                        #     routing_key=ROUTING_KEY,
+                        #     body=json.dumps(payload),
+                        #     mandatory=True
+                        # )
+
+
+                        print(
+                            f"📤 Produced @ {datetime.utcnow().isoformat()} | "
+                            f"exchange={EXCHANGE} routing_key={ROUTING_KEY}"
                         )
 
                 last_size = size

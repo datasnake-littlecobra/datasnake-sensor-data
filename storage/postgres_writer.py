@@ -16,6 +16,94 @@ class PostgresWriter:
         self.conn.execute("SET timezone = 'UTC'")
         logging.info("PostgreSQL connection established")
 
+    
+    def write_raw_batch(self, df: pl.DataFrame):
+        """
+        Writes raw sensor events to public.sensor_data_raw.
+        Expects df columns similar to your generator/consumer payload:
+        - topic (optional)
+        - device_id
+        - temp, humidity, pressure
+        - lat, lon, alt
+        - sats, wind_speed, wind_direction
+        - timestamp (string or datetime, optional)
+        """
+        if df.is_empty():
+            return
+
+        rows = []
+
+        # Quick DB context check (optional but helpful in early phases)
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT current_database(), current_user")
+            logging.warning(f"RAW WRITER DB CONTEXT: {cur.fetchone()}")
+
+        for row in df.to_dicts():
+            event_ts = row.get("timestamp")
+
+            if isinstance(event_ts, str):
+                event_ts = parse_date(event_ts)
+            elif event_ts is None:
+                event_ts = datetime.utcnow()
+
+            rows.append(
+                (
+                    str(uuid.uuid4()),
+                    event_ts,  # timestamp in table = event timestamp
+                    row.get("topic", "weather/data") or "weather/data",
+                    row.get("device_id") or "",
+                    float(row.get("temp") or 0.0),
+                    float(row.get("humidity") or 0.0),
+                    float(row.get("pressure") or 0.0),
+                    float(row.get("lat") or 0.0),
+                    float(row.get("lon") or 0.0),
+                    float(row.get("alt") or 0.0),
+                    int(row.get("sats") or 0),
+                    float(row.get("wind_speed") or 0.0),
+                    float(row.get("wind_direction") or 0.0),
+                    False,          # processed
+                    "new",          # status
+                )
+            )
+
+        sql = f"""
+            INSERT INTO public.{self.table} (
+                id,
+                timestamp,
+                topic,
+                device_id,
+                temp,
+                humidity,
+                pressure,
+                lat,
+                lon,
+                alt,
+                sats,
+                wind_speed,
+                wind_direction,
+                processed,
+                status
+            )
+            VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s
+            )
+        """
+
+        try:
+            with self.conn.cursor() as cur:
+                cur.executemany(sql, rows)
+
+                # Verify immediately (table name here is explicit)
+                cur.execute("SELECT COUNT(*) FROM public.sensor_data_raw")
+                logging.warning(f"RAW POST-INSERT COUNT (same conn): {cur.fetchone()[0]}")
+
+            logging.info(f"✅ PostgreSQL RAW: inserted {len(rows)} rows into {self.table}")
+
+        except Exception:
+            logging.exception("❌ PostgreSQL RAW INSERT failed")
+            raise
+
     def write_batch(self, df: pl.DataFrame):
         if df.is_empty():
             return
