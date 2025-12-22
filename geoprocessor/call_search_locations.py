@@ -11,20 +11,6 @@ con.execute("INSTALL delta; LOAD delta;")
 
 logging.basicConfig(level=logging.INFO)
 
-gadm_paths = {
-    "ADM0": "/home/resources/geoBoundariesCGAZ_ADM0.gpkg",
-    "ADM1": "/home/resources/geoBoundariesCGAZ_ADM1.gpkg",
-    "ADM2": "/home/resources/geoBoundariesCGAZ_ADM2.gpkg",
-    "WOF": "/home/resources/deltalake-wof-oregon",
-}
-
-gadm_paths_dev = {
-    "ADM0": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM0.gpkg",
-    "ADM1": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM1.gpkg",
-    "ADM2": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM2.gpkg",
-    "WOF": "deltalake-wof-oregon",
-}
-
 dataframe_mapping = {
     "ADM0": [
         "country",
@@ -100,9 +86,14 @@ class WeatherDataLocationSearcher:
 
     def find_admin_regions(self, lat: float, lon: float):
         country = self._query_gadm("ADM0", lat, lon, "shapeGroup")
+        if country:
+            country = country_code_mapping.get(country, country)
+
         state = self._query_gadm("ADM1", lat, lon, "shapeName")
         county = self._query_gadm("ADM2", lat, lon, "shapeName")
+
         return country, state, county
+
 
     # -----------------------------
     # POSTAL CODE LOOKUP (NO CACHE)

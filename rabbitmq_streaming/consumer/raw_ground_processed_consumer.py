@@ -35,6 +35,20 @@ OUTPUT_LOG.parent.mkdir(parents=True, exist_ok=True)
 
 MESSAGE_RE = re.compile(r"message:\s*(\{.*\})\s*\|")
 
+gadm_paths = {
+    "ADM0": "/home/resources/geoBoundariesCGAZ_ADM0.gpkg",
+    "ADM1": "/home/resources/geoBoundariesCGAZ_ADM1.gpkg",
+    "ADM2": "/home/resources/geoBoundariesCGAZ_ADM2.gpkg",
+    "WOF": "/home/resources/deltalake-wof-oregon",
+}
+
+gadm_paths_dev = {
+    "ADM0": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM0.gpkg",
+    "ADM1": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM1.gpkg",
+    "ADM2": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM2.gpkg",
+    "WOF": "deltalake-wof-oregon",
+}
+
 
 # -----------------------------
 # RabbitMQ connection
@@ -101,7 +115,6 @@ def on_message(channel, method, properties, body):
             with OUTPUT_LOG.open("a") as f:
                 f.write(json.dumps(record) + "\n")
 
-
             logging.info(
                 f"🧭 PROCESSED | device={row.get('device_id')} "
                 f"postal={row.get('postal_code')} "
@@ -120,7 +133,7 @@ def on_message(channel, method, properties, body):
 # -----------------------------
 def main():
     global searcher
-    searcher = WeatherDataLocationSearcher(WOF_DELTA_PATH)
+    searcher = WeatherDataLocationSearcher(WOF_DELTA_PATH, gadm_paths=gadm_paths)
 
     connection = connect_rabbitmq()
     channel = connection.channel()
