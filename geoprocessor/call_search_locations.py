@@ -11,6 +11,53 @@ con.execute("INSTALL delta; LOAD delta;")
 
 logging.basicConfig(level=logging.INFO)
 
+gadm_paths = {
+    "ADM0": "/home/resources/geoBoundariesCGAZ_ADM0.gpkg",
+    "ADM1": "/home/resources/geoBoundariesCGAZ_ADM1.gpkg",
+    "ADM2": "/home/resources/geoBoundariesCGAZ_ADM2.gpkg",
+    "WOF": "/home/resources/deltalake-wof-oregon",
+}
+
+gadm_paths_dev = {
+    "ADM0": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM0.gpkg",
+    "ADM1": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM1.gpkg",
+    "ADM2": "C:\\datasnake\\prab\\dev\\datasnake-sensor-data\\geoBoundariesCGAZ_ADM2.gpkg",
+    "WOF": "deltalake-wof-oregon",
+}
+
+dataframe_mapping = {
+    "ADM0": [
+        "country",
+        "geom",
+    ],
+    "ADM1": [
+        "state",
+        "geom",
+    ],
+    "ADM2": [
+        "county",
+        "geom",
+    ],
+}
+# ✅ Country Code Mapping
+country_code_mapping = {
+    "USA": "US",
+    "GBR": "GB",
+    "DEU": "DE",
+    "FRA": "FR",
+    "ESP": "ES",
+    "ITA": "IT",
+    "NLD": "NL",
+    "CHN": "CN",
+    "JPN": "JP",
+    "CAN": "CA",
+    "AUS": "AU",
+    "BRA": "BR",
+    "IND": "IN",
+    "RUS": "RU",
+    "MEX": "MX",
+    "ZAF": "ZA",
+}
 
 class WeatherDataLocationSearcher:
     def __init__(self, wof_delta_path: str, gadm_paths: dict):
