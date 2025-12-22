@@ -267,14 +267,16 @@ class WeatherDataLocationSearcher:
                 wof_location_cache_country_state_lat_long_key
             )
             if cached_location is not None:
-                # print("returning the cached location:", cached_location)
+                print("returning the cached location:", cached_location)
                 return
             if cached_df is not None:
-                # print("Reading from wof_cache:")
+                logging.info(f"Reading from wof_cache: {cached_df}")
                 search_point = Point(lon, lat)
 
                 for row in cached_df.iter_rows(named=True):
                     geom = row.get("geometry")
+                    logging.info(f"row: {row}")
+                    logging.info(f"geom: {geom}")
                     if geom and (
                         geom.contains(search_point) or geom.equals(search_point)
                     ):
@@ -283,14 +285,16 @@ class WeatherDataLocationSearcher:
             self.wof_df = self.wof_df.filter(
                 (pl.col("country") == country) & (pl.col("state") == state)
             )
+            logging.info(f"Filtered wof_df on country state: {self.wof_df}")
             self.wof_df = self.wof_df.with_columns(
                 pl.Series(
                     "geometry",
                     [wkt_loads(wkt) for wkt in self.wof_df["wkt_geometry"]],
                 )
             )
+            logging.info(f"Added geometry column to wof_df: {self.wof_df}")
             wof_cache.set(wof_cache_country_state_key, self.wof_df)
-            # print("what wof cache did you set: ", wof_cache.get(wof_cache_country_state_key))
+            logging.info("what wof cache did you set: ", wof_cache.get(wof_cache_country_state_key))
             search_point = Point(lon, lat)
 
             for row in self.wof_df.iter_rows(named=True):
@@ -299,10 +303,11 @@ class WeatherDataLocationSearcher:
                     wof_location_cache.set(
                         wof_location_cache_country_state_lat_long_key, pl.DataFrame(row)
                     )
+                    logging.info("what wof location cache should you set: ", pl.DataFrame(row))
+                    logging.info("what wof location cache did you set: ", wof_location_cache.get(wof_location_cache_country_state_lat_long_key))
                     return pl.DataFrame(row)
         except Exception as e:
-            print(f"Error in WOF query: {e}")
-
+            logging.exception(f"Error in WOF query: {e}")
         return None
 
     # def enrich_weather_data_batch(self, weather_data_df, batch_size=500):
@@ -364,7 +369,7 @@ class WeatherDataLocationSearcher:
             # print(weather_data_df.head(25))
             for row in weather_data_df.iter_rows(named=True):
                 country, state, city = self.find_location(row["lat"], row["lon"])
-                # print(f"{country} | {state} || {city} |||")
+                # print(f"came back from find_locations: {country} | {state} || {city} |||")
                 if not country or not state:
                     continue
                 if country and state:
@@ -377,6 +382,7 @@ class WeatherDataLocationSearcher:
                             country, state, city, row["lat"], row["lon"]
                         )
                     )
+                    # print(f"came back with wof: {wof_result_polars_query}")
                     postal_code = None
                     if (
                         wof_result_polars_query is None
@@ -402,9 +408,9 @@ class WeatherDataLocationSearcher:
                             }
                         )
 
-                    # print("enriched_rows =>")
+                    print("enriched_rows =>")
                     # print(type(enriched_rows))
-                    # print(enriched_rows)
+                    print(enriched_rows)
                 else:
                     print("moving on to the next record")
 
@@ -452,7 +458,8 @@ class WeatherDataLocationSearcher:
                 )
                 t2 = datetime.now()
                 total = t2 - t1
-
+                
+                logging.info(f"came back with wof_result: {wof_result}")
                 postal_code = (
                     wof_result["postal_code"].item(0)
                     if wof_result is not None and not wof_result.is_empty()

@@ -14,7 +14,7 @@ VHOST = os.getenv("RABBITMQ_VHOST")
 EXCHANGE = "sensor.ground.events"
 ROUTING_KEY = "sensor.ground.raw"
 
-LOG_FILE_PATH = "/home/dev/mqtt-python/mqtt_weather_distributed_logs.log"
+LOG_FILE_PATH = "/home/dev/mqtt-python/mqtt_weather_distributed_logs_small.log"
 LOG_FILE = Path(LOG_FILE_PATH)
 POLL_INTERVAL = 10  # seconds
 

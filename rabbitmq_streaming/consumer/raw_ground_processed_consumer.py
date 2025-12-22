@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 import polars as pl
-from geoprocessor.search_locations import WeatherDataLocationSearcher
+from geoprocessor.call_search_locations import WeatherDataLocationSearcher
 
 # from utils.search_locations import WeatherDataLocationSearcher
 
@@ -84,9 +84,9 @@ def on_message(channel, method, properties, body):
 
         # Convert single event → Polars DF
         df = pl.DataFrame([event])
+        logging.info(f"🌍 Raw event consumed for enrichment: {df}")
 
-        enriched_df = searcher.enrich_weather_data_optimized(df)
-
+        enriched_df = searcher.enrich_single_record(df)
         if enriched_df.is_empty():
             logging.warning("⚠️ No enrichment result, skipping")
             channel.basic_ack(delivery_tag=method.delivery_tag)
