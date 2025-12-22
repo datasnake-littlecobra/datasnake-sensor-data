@@ -76,7 +76,9 @@ class RawPostgresWriter:
             logging.exception("❌ RAW PostgreSQL insert failed")
             raise
 
-    def write_ground_enriched(self, df: pl.DataFrame):
+    def write_ground_enriched(
+        self, df: pl.DataFrame, table: str = "sensor_data_processed"
+    ):
         """
         Writes enriched ground sensor events to public.sensor_data_processed.
         Designed for streaming / RabbitMQ consumers (small batches).
@@ -123,7 +125,7 @@ class RawPostgresWriter:
             )
 
         sql = f"""
-            INSERT INTO public.{self.table} (
+            INSERT INTO public.{table} (
                 id,
                 timestamp,
                 topic,

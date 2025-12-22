@@ -110,8 +110,10 @@ def on_message(channel, method, properties, body):
             return
 
         # if enriched_df["postal_code"].is_not_null().any():
-        postgres_writer.write_ground_enriched(enriched_df)
-            
+        postgres_writer.write_ground_enriched(
+            enriched_df, table="sensor_data_processed"
+        )
+
         # Write to log for now (Phase 1 validation)
         for row in enriched_df.iter_rows(named=True):
             record = {
