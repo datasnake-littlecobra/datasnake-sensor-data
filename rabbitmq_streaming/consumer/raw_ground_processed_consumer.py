@@ -104,6 +104,10 @@ def on_message(channel, method, properties, body):
         logging.info(f"🌍 Raw event consumed for enrichment: {df}")
 
         enriched_df = searcher.enrich_single_record(df)
+        if enriched_df is None:
+            logging.warning("⚠️ Enrichment returned None — skipping message")
+            channel.basic_ack(delivery_tag=method.delivery_tag)
+            return
         if enriched_df.is_empty():
             logging.warning("⚠️ No enrichment result, skipping")
             channel.basic_ack(delivery_tag=method.delivery_tag)
