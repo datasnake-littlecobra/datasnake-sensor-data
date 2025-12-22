@@ -5,13 +5,16 @@ import logging
 import re
 from datetime import datetime
 from pathlib import Path
-
 import polars as pl
 from geoprocessor.call_search_locations import WeatherDataLocationSearcher
-
-# from utils.search_locations import WeatherDataLocationSearcher
+from raw_ground_postgres_writer import RawPostgresWriter
 
 logging.basicConfig(level=logging.INFO)
+
+# -----------------------------
+# Postgres config
+# -----------------------------
+POSTGRES_DSN = os.getenv("POSTGRES_DSN")
 
 # -----------------------------
 # RabbitMQ config
@@ -106,6 +109,9 @@ def on_message(channel, method, properties, body):
             channel.basic_ack(delivery_tag=method.delivery_tag)
             return
 
+        # if enriched_df["postal_code"].is_not_null().any():
+        postgres_writer.write_ground_enriched(enriched_df)
+            
         # Write to log for now (Phase 1 validation)
         for row in enriched_df.iter_rows(named=True):
             record = {
@@ -133,7 +139,9 @@ def on_message(channel, method, properties, body):
 # -----------------------------
 def main():
     global searcher
+    global postgres_writer
     searcher = WeatherDataLocationSearcher(WOF_DELTA_PATH, gadm_paths=gadm_paths)
+    postgres_writer = RawPostgresWriter(POSTGRES_DSN)
 
     connection = connect_rabbitmq()
     channel = connection.channel()
