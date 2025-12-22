@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 import polars as pl
 from geoprocessor.call_search_locations import WeatherDataLocationSearcher
-from raw_ground_postgres_writer import RawPostgresWriter
+from .raw_ground_postgres_writer import RawPostgresWriter
 
 logging.basicConfig(level=logging.INFO)
 

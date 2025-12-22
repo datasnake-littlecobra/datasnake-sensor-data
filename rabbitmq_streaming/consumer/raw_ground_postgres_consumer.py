@@ -4,7 +4,7 @@ import os
 import logging
 import re
 
-from raw_ground_postgres_writer import RawPostgresWriter
+from .raw_ground_postgres_writer import RawPostgresWriter
 
 logging.basicConfig(level=logging.INFO)
 
