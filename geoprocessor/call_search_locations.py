@@ -46,17 +46,39 @@ country_code_mapping = {
 }
 
 class WeatherDataLocationSearcher:
-    def __init__(self, wof_delta_path: str, gadm_paths: dict):
+    def __init__(self, wof_delta_path: str, gadm_paths: dict, pg_conn):
         """
         wof_delta_path: path to WOF delta table (Oregon only for now)
         gadm_paths: dict with keys ADM0, ADM1, ADM2 -> gpkg paths
+        pg_conn: Postgres connection object
         """
         self.wof_delta_path = wof_delta_path
         self.gadm_paths = gadm_paths
+        self.pg_conn = pg_conn.get_conn()
 
         logging.info("📦 Loading WOF Delta table (once, immutable)")
         self.wof_df = pl.scan_delta(self.wof_delta_path).collect()
         logging.info(f"📊 WOF rows loaded: {len(self.wof_df)}")
+
+    def lookup_city_from_postgres(self, postal_code: str):
+        if not postal_code:
+            return None, None
+
+        with self.pg_conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT city, state
+                FROM usps_postal_code_mapping
+                WHERE postal_code = %s
+                LIMIT 1
+                """,
+                (postal_code,),
+            )
+            row = cur.fetchone()
+            logging.info(f"🌍 City lookup for postal code {postal_code}: {row}")
+
+        return row if row else (None, None)
+
 
     # -----------------------------
     # GADM LOOKUPS (Country/State/County)
@@ -155,13 +177,15 @@ class WeatherDataLocationSearcher:
             return None
         
         enriched_rows = []
-        country, state, city = self.find_admin_regions(lat, lon)
+        country, state, county = self.find_admin_regions(lat, lon)
 
         if not country or not state:
             logging.warning("❌ Missing country/state — skipping postal lookup")
             return None
 
         postal_code = self.lookup_postal_code(lat, lon, country, state)
+        
+        city = self.lookup_city_from_postgres(postal_code)[0]
 
         enriched_rows.append(
             {
@@ -171,6 +195,7 @@ class WeatherDataLocationSearcher:
                 "country": country,
                 "state": state,
                 "city": city,
+                "county": county,
                 "device_id": row.get("device_id"),
                 "temp": row.get("temp"),
                 "humidity": row.get("humidity"),

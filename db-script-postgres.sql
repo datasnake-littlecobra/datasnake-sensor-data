@@ -58,3 +58,28 @@ CREATE TABLE IF NOT EXISTS sensor_data_processed (
     nearby_postal_codes TEXT[],
     processed_at TIMESTAMPTZ NOT NULL
 );
+
+
+CREATE TABLE IF NOT EXISTS usps_postal_code_mapping (
+    id BIGSERIAL PRIMARY KEY,
+
+    postal_code TEXT NOT NULL,
+    city TEXT NOT NULL,
+    state TEXT NOT NULL,
+
+    finance_number TEXT,
+    facility_name TEXT,
+    street_address TEXT,
+
+    region TEXT,
+    district TEXT,
+    area_code TEXT,
+
+    source_zip TEXT,
+    employee_count INTEGER,
+
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_usps_postal_code
+    ON usps_postal_code_mapping (postal_code);

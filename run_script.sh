@@ -181,5 +181,9 @@ source "$VENV_DIR/bin/activate"
 echo "Using Python at to run code: $(which $VENV_PYTHON_BIN)"
 echo "Pip list before running code: $($VENV_PIP_BIN list)"
 
+# Load the data necessary into postgres
+# load usps postal code data mapping csv file into postgres
+#$VENV_PYTHON_BIN /home/dev/datasnake-sensor-data/manual-scripts/load_data_into_postgres.py
+
 # Step 3.6: Run your Python script or entry point (e.g., main.py)
 # $VENV_DIR/bin/python /home/dev/datasnake-sensor-data/main.py

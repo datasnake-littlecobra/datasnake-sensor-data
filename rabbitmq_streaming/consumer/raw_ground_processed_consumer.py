@@ -8,6 +8,7 @@ from pathlib import Path
 import polars as pl
 from geoprocessor.call_search_locations import WeatherDataLocationSearcher
 from .raw_ground_postgres_writer import RawPostgresWriter
+from utils.postgres_connection import PostgresConnection
 
 logging.basicConfig(level=logging.INFO)
 
@@ -146,7 +147,8 @@ def on_message(channel, method, properties, body):
 def main():
     global searcher
     global postgres_writer
-    searcher = WeatherDataLocationSearcher(WOF_DELTA_PATH, gadm_paths=gadm_paths)
+    pg_conn = PostgresConnection(POSTGRES_DSN)
+    searcher = WeatherDataLocationSearcher(WOF_DELTA_PATH, gadm_paths=gadm_paths, pg_conn=pg_conn)
     postgres_writer = RawPostgresWriter(POSTGRES_DSN)
 
     connection = connect_rabbitmq()
