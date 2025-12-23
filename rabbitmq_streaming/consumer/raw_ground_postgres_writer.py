@@ -114,6 +114,7 @@ class RawPostgresWriter:
                     int(row.get("sats") or 0),
                     float(row.get("wind_speed") or 0.0),
                     float(row.get("wind_direction") or 0.0),
+                    row.get("usps_locale_name"),
                     row.get("county"),
                     row.get("city"),
                     row.get("state"),
