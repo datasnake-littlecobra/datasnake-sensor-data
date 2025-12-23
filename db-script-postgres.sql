@@ -60,26 +60,20 @@ CREATE TABLE IF NOT EXISTS sensor_data_processed (
 );
 
 
-CREATE TABLE IF NOT EXISTS usps_postal_code_mapping (
+CREATE TABLE usps_postal_code_mapping (
     id BIGSERIAL PRIMARY KEY,
-
-    postal_code TEXT NOT NULL,
-    city TEXT NOT NULL,
-    state TEXT NOT NULL,
-
-    finance_number TEXT,
-    facility_name TEXT,
-    street_address TEXT,
-
-    region TEXT,
-    district TEXT,
+    postal_code TEXT,          -- DELIVERY ZIPCODE (join key)
+    area_name TEXT,
     area_code TEXT,
-
-    source_zip TEXT,
-    employee_count INTEGER,
-
-    created_at TIMESTAMPTZ DEFAULT now()
+    district_name TEXT,
+    district_number TEXT,
+    locale_name TEXT,
+    address TEXT,
+    city TEXT,
+    state TEXT,
+    zip_code TEXT,             -- PHYSICAL ZIP
+    zip_code_4 TEXT
 );
 
-CREATE INDEX IF NOT EXISTS idx_usps_postal_code
-    ON usps_postal_code_mapping (postal_code);
+CREATE INDEX idx_usps_postal_code
+ON usps_postal_code_mapping (postal_code);

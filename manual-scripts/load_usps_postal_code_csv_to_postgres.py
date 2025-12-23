@@ -47,17 +47,17 @@ def main():
         for row in reader:
             try:
                 record = {
-                    "region": row[0],
-                    "district": row[1],
-                    "area_code": row[2],
-                    "finance_number": row[3],
+                    "area_name": row[0],
+                    "area_code": row[1],
+                    "district_name": row[2],
+                    "district_number": row[3],
                     "postal_code": row[4],
-                    "facility_name": row[5],
-                    "street_address": row[6],
+                    "locale_name": row[5],
+                    "address": row[6],
                     "city": row[7],
                     "state": row[8],
-                    "source_zip": row[9],
-                    "employee_count": int(row[10]) if row[10].isdigit() else None,
+                    "zip_code": row[9],
+                    "zip_code_4": row[10],
                 }
 
                 cur.execute(INSERT_SQL, record)
