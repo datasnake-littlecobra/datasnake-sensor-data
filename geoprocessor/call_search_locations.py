@@ -185,7 +185,7 @@ class WeatherDataLocationSearcher:
 
         postal_code = self.lookup_postal_code(lat, lon, country, state)
         
-        city, locale_name = self.lookup_city_from_postgres(postal_code)[0]
+        city, locale_name = self.lookup_city_from_postgres(postal_code)
 
         enriched_rows.append(
             {
