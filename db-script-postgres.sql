@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS sensor_data_processed (
     wind_speed REAL,
     wind_direction REAL,
 
+    usps_locale_name TEXT,
     county TEXT,
     city TEXT,
     state TEXT,

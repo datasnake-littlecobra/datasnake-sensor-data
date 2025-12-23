@@ -139,6 +139,7 @@ class RawPostgresWriter:
                 sats,
                 wind_speed,
                 wind_direction,
+                usps_locale_name,
                 county,
                 city,
                 state,

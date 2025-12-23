@@ -67,7 +67,7 @@ class WeatherDataLocationSearcher:
         with self.pg_conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT city, state
+                SELECT city, locale_name
                 FROM usps_postal_code_mapping
                 WHERE postal_code = %s
                 LIMIT 1
@@ -75,7 +75,7 @@ class WeatherDataLocationSearcher:
                 (postal_code,),
             )
             row = cur.fetchone()
-            logging.info(f"🌍 City lookup for postal code {postal_code}: {row}")
+            logging.info(f"🌍 City and locale_name lookup for postal code {postal_code}: {row}")
 
         return row if row else (None, None)
 
@@ -185,13 +185,14 @@ class WeatherDataLocationSearcher:
 
         postal_code = self.lookup_postal_code(lat, lon, country, state)
         
-        city = self.lookup_city_from_postgres(postal_code)[0]
+        city, locale_name = self.lookup_city_from_postgres(postal_code)[0]
 
         enriched_rows.append(
             {
                 "postal_code": postal_code,
                 "lat": lat,
                 "lon": lon,
+                "usps_locale_name": locale_name,
                 "country": country,
                 "state": state,
                 "city": city,
