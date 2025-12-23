@@ -77,7 +77,8 @@ class WeatherDataLocationSearcher:
             row = cur.fetchone()
             logging.info(f"🌍 City and locale_name lookup for postal code {postal_code}: {row}")
 
-        return row if row else (None, None)
+        city, locale_name = row if row else (None, None)
+        return (city, locale_name)
 
 
     # -----------------------------
