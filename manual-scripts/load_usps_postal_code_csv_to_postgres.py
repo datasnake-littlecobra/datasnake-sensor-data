@@ -2,6 +2,7 @@ import csv
 import psycopg
 from pathlib import Path
 import os
+
 CSV_PATH = Path("/home/dev/datasnake-sensor-data/public-datasets/usps_postal_code_mapping.csv")
 POSTGRES_DSN = os.getenv("POSTGRES_DSN")
 
