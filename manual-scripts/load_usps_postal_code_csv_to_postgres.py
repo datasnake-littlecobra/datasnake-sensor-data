@@ -2,6 +2,7 @@ import csv
 import psycopg
 from pathlib import Path
 import os
+import logging
 
 CSV_PATH = Path("/home/dev/datasnake-sensor-data/public-datasets/usps_postal_code_mapping.csv")
 POSTGRES_DSN = os.getenv("POSTGRES_DSN")
@@ -9,29 +10,29 @@ POSTGRES_DSN = os.getenv("POSTGRES_DSN")
 INSERT_SQL = """
 INSERT INTO usps_postal_code_mapping (
     postal_code,
+    area_name,
+    area_code,
+    district_name,
+    district_number,
+    locale_name,
+    address,
     city,
     state,
-    finance_number,
-    facility_name,
-    street_address,
-    region,
-    district,
-    area_code,
-    source_zip,
-    employee_count
+    zip_code,
+    zip_code_4
 )
 VALUES (
     %(postal_code)s,
+    %(area_name)s,
+    %(area_code)s,
+    %(district_name)s,
+    %(district_number)s,
+    %(locale_name)s,
+    %(address)s,
     %(city)s,
     %(state)s,
-    %(finance_number)s,
-    %(facility_name)s,
-    %(street_address)s,
-    %(region)s,
-    %(district)s,
-    %(area_code)s,
-    %(source_zip)s,
-    %(employee_count)s
+    %(zip_code)s,
+    %(zip_code_4)s
 )
 ON CONFLICT DO NOTHING;
 """
@@ -46,6 +47,7 @@ def main():
 
         for row in reader:
             try:
+                logging.info(f"Processing row: {row}")
                 record = {
                     "area_name": row[0],
                     "area_code": row[1],
