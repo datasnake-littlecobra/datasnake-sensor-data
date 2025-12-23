@@ -2,11 +2,12 @@ import csv
 import logging
 import psycopg
 from pathlib import Path
+import os
 
 logging.basicConfig(level=logging.INFO)
 
-CSV_PATH = Path("/path/to/usps.csv")
-POSTGRES_DSN = "..."  # your DSN
+CSV_PATH = Path("/home/dev/datasnake-sensor-data/public-datasets/usps_postal_code_mapping.csv")
+POSTGRES_DSN = os.getenv("POSTGRES_DSN")
 
 INSERT_SQL = """
 INSERT INTO usps_postal_code_mapping (
@@ -37,7 +38,6 @@ VALUES (
 );
 """
 
-
 def main():
     conn = psycopg.connect(POSTGRES_DSN)
     conn.autocommit = True
@@ -45,9 +45,7 @@ def main():
     inserted = 0
     skipped = 0
 
-    with conn.cursor() as cur, CSV_PATH.open(
-        "r", encoding="utf-8-sig", newline=""
-    ) as f:
+    with conn.cursor() as cur, CSV_PATH.open("r", encoding="utf-8-sig", newline="") as f:
         reader = csv.reader(f, delimiter=",")  # ✅ FIX: comma
 
         for i, row in enumerate(reader):
@@ -84,7 +82,6 @@ def main():
                 logging.warning(f"Skipping bad row #{i}: {row} | error={e}")
 
     logging.info(f"✅ Done. Inserted={inserted}, Skipped={skipped}")
-
 
 if __name__ == "__main__":
     main()
